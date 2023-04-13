@@ -28,7 +28,7 @@ export default function App() {
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
       <ImageBackground
-        style={styles.container}
+        style={styles.image}
         source={require("./assets/img/photo-bg.jpg")}
       >
         <RegistrationScreen />
@@ -41,7 +41,11 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
+  },
+  image: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
     justifyContent: "flex-end",
   },
 });
