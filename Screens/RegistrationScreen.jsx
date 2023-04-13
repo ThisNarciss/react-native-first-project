@@ -20,28 +20,28 @@ export function RegistrationScreen() {
   const [showBtnText, setShowBtnText] = useState("Показати");
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
 
-  // useEffect(() => {
-  //   const keyboardDidShowListener = Keyboard.addListener(
-  //     "keyboardDidShow",
-  //     () => setIsKeyboardShow(true)
-  //   );
-  //   const keyboardDidHideListener = Keyboard.addListener(
-  //     "keyboardDidHide",
-  //     () => setIsKeyboardShow(false)
-  //   );
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => setIsKeyboardShow(true)
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => setIsKeyboardShow(false)
+    );
 
-  //   return () => {
-  //     keyboardDidShowListener.remove();
-  //     keyboardDidHideListener.remove();
-  //   };
-  // }, []);
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const nameHandler = (text) => setName(text);
   const emailHandler = (text) => setEmail(text);
   const passwordHandler = (text) => setPassword(text);
   const keyboardHide = () => {
-    setIsKeyboardShow(false);
     Keyboard.dismiss();
+    setIsKeyboardShow(false);
   };
 
   const onInputFocus = () => setIsKeyboardShow(true);
@@ -59,8 +59,8 @@ export function RegistrationScreen() {
 
   const onLogin = () => {
     console.log(name, email, password);
-    setIsKeyboardShow(false);
     Keyboard.dismiss();
+    setIsKeyboardShow(false);
   };
 
   return (
