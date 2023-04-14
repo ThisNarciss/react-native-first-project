@@ -11,8 +11,9 @@ import {
   Text,
 } from "react-native";
 import { Button } from "@rneui/themed";
+import { SharedLayout } from "./SharedLayout";
 
-export function RegistrationScreen() {
+export function RegistrationScreen({ navigation }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,8 +41,8 @@ export function RegistrationScreen() {
   const emailHandler = (text) => setEmail(text);
   const passwordHandler = (text) => setPassword(text);
   const keyboardHide = () => {
-    Keyboard.dismiss();
     setIsKeyboardShow(false);
+    Keyboard.dismiss();
   };
 
   const onInputFocus = () => setIsKeyboardShow(true);
@@ -59,81 +60,93 @@ export function RegistrationScreen() {
 
   const onLogin = () => {
     console.log(name, email, password);
-    Keyboard.dismiss();
     setIsKeyboardShow(false);
+    Keyboard.dismiss();
+    setName("");
+    setEmail("");
+    setPassword("");
   };
 
   return (
-    <TouchableWithoutFeedback onPress={keyboardHide}>
-      <View style={styles.container}>
-        <Text style={styles.text}>Реєстрація</Text>
-        <KeyboardAvoidingView
-          style={styles.form}
-          behavior={Platform.OS == "ios" ? "padding" : "height"}
+    <SharedLayout>
+      <TouchableWithoutFeedback onPress={keyboardHide}>
+        <View
+          style={{
+            ...styles.container,
+            paddingBottom: isKeyboardShow ? 32 : 78,
+          }}
         >
-          <TextInput
-            style={{ ...styles.input, marginTop: 33 }}
-            value={name}
-            onChangeText={nameHandler}
-            onFocus={onInputFocus}
-            placeholder="Логін"
-            placeholderTextColor={"#BDBDBD"}
-            textContentType="name"
-            enterKeyHint="send"
-          />
-          <TextInput
-            style={{ ...styles.input, marginTop: 16 }}
-            value={email}
-            onChangeText={emailHandler}
-            onFocus={onInputFocus}
-            placeholder="Адреса електронної пошти"
-            placeholderTextColor={"#BDBDBD"}
-            textContentType="emailAddress"
-            keyboardType="email-address"
-            enterKeyHint="send"
-          />
-          <View style={{ ...styles.passwordInputBox, marginTop: 16 }}>
+          <Text style={styles.text}>Реєстрація</Text>
+          <KeyboardAvoidingView
+            style={styles.form}
+            behavior={Platform.OS == "ios" ? "padding" : "height"}
+          >
             <TextInput
-              style={styles.input}
-              value={password}
-              onChangeText={passwordHandler}
+              style={{ ...styles.input, marginTop: 33 }}
+              value={name}
+              onChangeText={nameHandler}
               onFocus={onInputFocus}
-              placeholder="Пароль"
-              secureTextEntry={isPasswordShow}
+              placeholder="Логін"
               placeholderTextColor={"#BDBDBD"}
-              textContentType="password"
+              textContentType="name"
               enterKeyHint="send"
             />
+            <TextInput
+              style={{ ...styles.input, marginTop: 16 }}
+              value={email}
+              onChangeText={emailHandler}
+              onFocus={onInputFocus}
+              placeholder="Адреса електронної пошти"
+              placeholderTextColor={"#BDBDBD"}
+              textContentType="emailAddress"
+              keyboardType="email-address"
+              enterKeyHint="send"
+            />
+            <View style={{ ...styles.passwordInputBox, marginTop: 16 }}>
+              <TextInput
+                style={styles.input}
+                value={password}
+                onChangeText={passwordHandler}
+                onFocus={onInputFocus}
+                placeholder="Пароль"
+                secureTextEntry={isPasswordShow}
+                placeholderTextColor={"#BDBDBD"}
+                textContentType="password"
+                enterKeyHint="send"
+              />
+              <TouchableOpacity
+                style={styles.showPasswordBtn}
+                onPress={showPasswordText}
+              >
+                <Text style={styles.showPasswordBtnText}>{showBtnText}</Text>
+              </TouchableOpacity>
+            </View>
             <TouchableOpacity
-              style={styles.showPasswordBtn}
-              onPress={showPasswordText}
+              style={{
+                ...styles.buttonBox,
+                marginTop: 43,
+                display: isKeyboardShow ? "none" : "flex",
+              }}
+              onPress={onLogin}
             >
-              <Text style={styles.showPasswordBtnText}>{showBtnText}</Text>
+              <Text style={styles.buttonText}>Зареєструватися</Text>
             </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            style={{
-              ...styles.buttonBox,
-              marginTop: 43,
-            }}
-            onPress={onLogin}
-          >
-            <Text style={styles.buttonText}>Зареєструватися</Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity
-            style={{
-              ...styles.redirectBtn,
-              marginBottom: isKeyboardShow ? -100 : 78,
-            }}
-          >
-            <Text style={styles.redirectBtnText}>
-              Вже є обліковий запис? Увійти
-            </Text>
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
-      </View>
-    </TouchableWithoutFeedback>
+            <TouchableOpacity
+              style={{
+                ...styles.redirectBtn,
+                display: isKeyboardShow ? "none" : "flex",
+              }}
+              onPress={() => navigation.navigate("Login")}
+            >
+              <Text style={styles.redirectBtnText}>
+                Вже є обліковий запис? Увійти
+              </Text>
+            </TouchableOpacity>
+          </KeyboardAvoidingView>
+        </View>
+      </TouchableWithoutFeedback>
+    </SharedLayout>
   );
 }
 
@@ -143,7 +156,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     paddingTop: 92,
-    // paddingBottom: 78,
+    overflow: "scroll",
   },
   text: {
     fontFamily: "Roboto-Medium",

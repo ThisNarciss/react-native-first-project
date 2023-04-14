@@ -4,8 +4,12 @@ import { LoginScreen } from "./Screens/LoginScreen";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 SplashScreen.preventAutoHideAsync();
+const Stack = createNativeStackNavigator();
+const { Navigator, Screen } = Stack;
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -26,15 +30,12 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      <ImageBackground
-        style={styles.image}
-        source={require("./assets/img/photo-bg.jpg")}
-      >
-        <RegistrationScreen />
-        {/* <LoginScreen /> */}
-      </ImageBackground>
-    </View>
+    <NavigationContainer basename="/react-native-first-project">
+      <Navigator initialRouteName="Login">
+        <Screen name="Registration" component={RegistrationScreen} />
+        <Screen name="Login" component={LoginScreen} />
+      </Navigator>
+    </NavigationContainer>
   );
 }
 
