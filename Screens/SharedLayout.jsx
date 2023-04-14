@@ -2,7 +2,6 @@ import { StyleSheet, View, ImageBackground } from "react-native";
 import { useFonts } from "expo-font";
 import { useCallback } from "react";
 import * as SplashScreen from "expo-splash-screen";
-import { RegistrationScreen } from "./RegistrationScreen";
 
 SplashScreen.preventAutoHideAsync();
 

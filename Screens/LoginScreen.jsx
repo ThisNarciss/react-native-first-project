@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Button } from "@rneui/themed";
-import { useEffect } from "react";
 import { SharedLayout } from "./SharedLayout";
 
 export function LoginScreen({ navigation }) {
