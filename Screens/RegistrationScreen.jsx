@@ -58,10 +58,11 @@ export function RegistrationScreen({ navigation }) {
     }
   };
 
-  const onLogin = () => {
+  const onRegistration = () => {
     console.log(name, email, password);
     setIsKeyboardShow(false);
     Keyboard.dismiss();
+    navigation.navigate("Home")
     setName("");
     setEmail("");
     setPassword("");
@@ -127,7 +128,7 @@ export function RegistrationScreen({ navigation }) {
                 marginTop: 43,
                 display: isKeyboardShow ? "none" : "flex",
               }}
-              onPress={onLogin}
+              onPress={onRegistration}
             >
               <Text style={styles.buttonText}>Зареєструватися</Text>
             </TouchableOpacity>

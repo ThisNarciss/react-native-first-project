@@ -57,6 +57,7 @@ export function LoginScreen({ navigation }) {
     console.log(email, password);
     setIsKeyboardShow(false);
     Keyboard.dismiss();
+    navigation.navigate("Home");
     setEmail("");
     setPassword("");
   };
