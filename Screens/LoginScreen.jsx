@@ -68,7 +68,7 @@ export function LoginScreen({ navigation }) {
         <View
           style={{
             ...styles.container,
-            paddingBottom: isKeyboardShow && Keyboard.isVisible ? 32 : 78,
+            paddingBottom: isKeyboardShow && Keyboard.isVisible ? 32 : 144,
           }}
         >
           <Text style={styles.text}>Вхід</Text>

@@ -1,11 +1,11 @@
 import { View, Text } from "react-native";
 import { SharedLayout } from "./SharedLayout";
 
-export function ProfileScreen() {
+export function CreatePostScreen() {
   return (
     <SharedLayout>
       <View>
-        <Text>ProfileScreen</Text>
+        <Text>CreatePostsScreen</Text>
       </View>
     </SharedLayout>
   );
