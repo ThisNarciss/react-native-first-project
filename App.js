@@ -10,7 +10,7 @@ const { Navigator, Screen } = Stack;
 export default function App() {
   return (
     <NavigationContainer basename="/react-native-first-project">
-      <Navigator initialRouteName="Login">
+      <Navigator>
         <Screen
           name="Registration"
           component={RegistrationScreen}

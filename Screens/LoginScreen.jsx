@@ -19,6 +19,7 @@ export function LoginScreen({ navigation }) {
   const [isPasswordShow, setIsPasswordShow] = useState(true);
   const [showBtnText, setShowBtnText] = useState("Показати");
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
+  const [focusedInput, setFocusedInput] = useState(null);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -36,6 +37,11 @@ export function LoginScreen({ navigation }) {
     };
   }, []);
 
+  const onInputFocus = (id) => {
+    setIsKeyboardShow(true);
+    setFocusedInput(id);
+  };
+  const handleBlur = () => setFocusedInput(null);
   const emailHandler = (text) => setEmail(text);
   const passwordHandler = (text) => setPassword(text);
   const keyboardHide = () => {
@@ -77,9 +83,15 @@ export function LoginScreen({ navigation }) {
             behavior={Platform.OS == "ios" ? "padding" : "height"}
           >
             <TextInput
-              style={{ ...styles.input, marginTop: 33 }}
+              style={{
+                ...styles.input,
+                marginTop: 33,
+                ...(focusedInput === 1 && styles.inputFocused),
+              }}
               value={email}
               onChangeText={emailHandler}
+              onFocus={() => onInputFocus(1)}
+              onBlur={handleBlur}
               placeholder="Адреса електронної пошти"
               placeholderTextColor={"#BDBDBD"}
               textContentType="emailAddress"
@@ -88,9 +100,14 @@ export function LoginScreen({ navigation }) {
             />
             <View style={{ ...styles.passwordInputBox, marginTop: 16 }}>
               <TextInput
-                style={styles.input}
+                style={{
+                  ...styles.input,
+                  ...(focusedInput === 2 && styles.inputFocused),
+                }}
                 value={password}
                 onChangeText={passwordHandler}
+                onFocus={() => onInputFocus(2)}
+                onBlur={handleBlur}
                 placeholder="Пароль"
                 secureTextEntry={isPasswordShow}
                 placeholderTextColor={"#BDBDBD"}
@@ -163,6 +180,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: "solid",
     borderColor: "#E8E8E8",
+  },
+  inputFocused: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "#FF6C00",
   },
   passwordInputBox: {
     position: "relative",

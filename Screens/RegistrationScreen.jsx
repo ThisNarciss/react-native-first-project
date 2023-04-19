@@ -12,6 +12,8 @@ import {
 } from "react-native";
 import { Button } from "@rneui/themed";
 import { SharedLayout } from "./SharedLayout";
+import { Image } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
 
 export function RegistrationScreen({ navigation }) {
   const [name, setName] = useState("");
@@ -20,6 +22,8 @@ export function RegistrationScreen({ navigation }) {
   const [isPasswordShow, setIsPasswordShow] = useState(true);
   const [showBtnText, setShowBtnText] = useState("Показати");
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
+  const [width, setWidth] = useState(0);
+  const [focusedInput, setFocusedInput] = useState(null);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -37,6 +41,16 @@ export function RegistrationScreen({ navigation }) {
     };
   }, []);
 
+  const onLayout = (event) => {
+    const { width } = event.nativeEvent.layout;
+    setWidth(width);
+  };
+
+  const onInputFocus = (id) => {
+    setIsKeyboardShow(true);
+    setFocusedInput(id);
+  };
+  const handleBlur = () => setFocusedInput(null);
   const nameHandler = (text) => setName(text);
   const emailHandler = (text) => setEmail(text);
   const passwordHandler = (text) => setPassword(text);
@@ -44,8 +58,6 @@ export function RegistrationScreen({ navigation }) {
     setIsKeyboardShow(false);
     Keyboard.dismiss();
   };
-
-  const onInputFocus = () => setIsKeyboardShow(true);
 
   const showPasswordText = () => {
     if (!isPasswordShow) {
@@ -62,7 +74,7 @@ export function RegistrationScreen({ navigation }) {
     console.log(name, email, password);
     setIsKeyboardShow(false);
     Keyboard.dismiss();
-    navigation.navigate("Home")
+    navigation.navigate("Home");
     setName("");
     setEmail("");
     setPassword("");
@@ -77,26 +89,49 @@ export function RegistrationScreen({ navigation }) {
             paddingBottom: isKeyboardShow ? 32 : 78,
           }}
         >
+          <View
+            onLayout={onLayout}
+            style={{
+              ...styles.photoBox,
+              transform: [{ translateX: -0.5 * width }],
+            }}
+          >
+            <Image style={styles.image} />
+            <TouchableOpacity style={styles.icon}>
+              <AntDesign name="pluscircleo" size={25} color="#FF6C00" />
+            </TouchableOpacity>
+          </View>
+
           <Text style={styles.text}>Реєстрація</Text>
           <KeyboardAvoidingView
             style={styles.form}
             behavior={Platform.OS == "ios" ? "padding" : "height"}
           >
             <TextInput
-              style={{ ...styles.input, marginTop: 33 }}
+              style={{
+                ...styles.input,
+                marginTop: 33,
+                ...(focusedInput === 1 && styles.inputFocused),
+              }}
               value={name}
               onChangeText={nameHandler}
-              onFocus={onInputFocus}
+              onFocus={() => onInputFocus(1)}
+              onBlur={handleBlur}
               placeholder="Логін"
               placeholderTextColor={"#BDBDBD"}
               textContentType="name"
               enterKeyHint="send"
             />
             <TextInput
-              style={{ ...styles.input, marginTop: 16 }}
+              style={{
+                ...styles.input,
+                marginTop: 16,
+                ...(focusedInput === 2 && styles.inputFocused),
+              }}
               value={email}
               onChangeText={emailHandler}
-              onFocus={onInputFocus}
+              onFocus={() => onInputFocus(2)}
+              onBlur={handleBlur}
               placeholder="Адреса електронної пошти"
               placeholderTextColor={"#BDBDBD"}
               textContentType="emailAddress"
@@ -105,10 +140,14 @@ export function RegistrationScreen({ navigation }) {
             />
             <View style={{ ...styles.passwordInputBox, marginTop: 16 }}>
               <TextInput
-                style={styles.input}
+                style={{
+                  ...styles.input,
+                  ...(focusedInput === 3 && styles.inputFocused),
+                }}
                 value={password}
                 onChangeText={passwordHandler}
-                onFocus={onInputFocus}
+                onFocus={() => onInputFocus(3)}
+                onBlur={handleBlur}
                 placeholder="Пароль"
                 secureTextEntry={isPasswordShow}
                 placeholderTextColor={"#BDBDBD"}
@@ -157,8 +196,25 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     paddingTop: 92,
-    overflow: "scroll",
+
+    position: "relative",
   },
+  photoBox: {
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
+    top: -60,
+    left: "50%",
+  },
+  image: {
+    position: "relative",
+
+    width: 120,
+    height: 120,
+    borderRadius: 16,
+    backgroundColor: "#F6F6F6",
+  },
+  icon: { position: "absolute", right: -12, top: 81 },
   text: {
     fontFamily: "Roboto-Medium",
     fontSize: 30,
@@ -181,6 +237,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: "solid",
     borderColor: "#E8E8E8",
+  },
+  inputFocused: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "#FF6C00",
   },
   passwordInputBox: {
     position: "relative",

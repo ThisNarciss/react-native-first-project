@@ -37,7 +37,6 @@ export function SharedLayout({ children }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    overflow: "scroll",
   },
   image: {
     flex: 1,

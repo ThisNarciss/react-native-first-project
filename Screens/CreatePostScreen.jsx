@@ -1,12 +1,9 @@
 import { View, Text } from "react-native";
-import { SharedLayout } from "./SharedLayout";
 
 export function CreatePostScreen() {
   return (
-    <SharedLayout>
-      <View>
-        <Text>CreatePostsScreen</Text>
-      </View>
-    </SharedLayout>
+    <View style={{ backgroundColor: "#ffffff", flex: 1 }}>
+      <Text>CreatePostsScreen</Text>
+    </View>
   );
 }
