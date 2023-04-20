@@ -9,7 +9,6 @@ const Tab = createBottomTabNavigator();
 const { Navigator, Screen } = Tab;
 
 export function Home({ navigation }) {
-  console.log(navigation);
   return (
     <Navigator
       initialRouteName="PostsScreen"
@@ -76,12 +75,16 @@ export function Home({ navigation }) {
             lineHeight: 22,
             color: "#212121",
           },
+          headerStyle: {
+            borderBottomWidth: 1,
+            borderBottomColor: "#E5E5E5",
+          },
           headerLeftContainerStyle: { marginLeft: 16 },
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => navigation.navigate("PostsScreen")}
             >
-              <AntDesign name="arrowleft" size={24} color="black" />
+              <AntDesign name="arrowleft" size={24} color="#212121" />
             </TouchableOpacity>
           ),
         })}
