@@ -26,6 +26,7 @@ export function CreatePostScreen() {
   const [cameraRef, setCameraRef] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [photo, setPhoto] = useState(null);
+  // const [cameraReady, setCameraReady] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -43,6 +44,10 @@ export function CreatePostScreen() {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
+
+  // const onCameraReady = () => {
+  //   setCameraReady(true);
+  // };
 
   const handleBtnPublic = () => {
     (async () => {
@@ -74,6 +79,7 @@ export function CreatePostScreen() {
     if (cameraRef) {
       const { uri } = await cameraRef.takePictureAsync();
       await MediaLibrary.createAssetAsync(uri);
+
       setPhoto(uri);
     }
   };
@@ -82,11 +88,19 @@ export function CreatePostScreen() {
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
         <View style={styles.container}>
+          <View>
+            <Image
+              style={{ width: 100, height: 100 }}
+              source={{ uri: photo }}
+            />
+          </View>
           <View style={styles.cameraBox}>
-            <Camera style={styles.camera} type={type} ref={setCameraRef}>
-              <View>
-                <Image source={photo} />
-              </View>
+            <Camera
+              // onCameraReady={onCameraReady}
+              style={styles.camera}
+              type={type}
+              ref={setCameraRef}
+            >
               <TouchableOpacity
                 style={styles.cameraReverse}
                 onPress={() => {
