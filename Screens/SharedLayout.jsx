@@ -1,4 +1,10 @@
-import { StyleSheet, View, ImageBackground } from "react-native";
+import {
+  StyleSheet,
+  View,
+  ImageBackground,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import { useFonts } from "expo-font";
 import { useCallback } from "react";
 import * as SplashScreen from "expo-splash-screen";
@@ -12,7 +18,9 @@ export function SharedLayout({ children }) {
     "Roboto-Bold": require("../assets/fonts/Roboto/Roboto-Bold.ttf"),
     "Inter-Medium": require("../assets/fonts/Inter/Inter-Medium.ttf"),
   });
-
+  const keyboardHide = () => {
+    Keyboard.dismiss();
+  };
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -23,14 +31,16 @@ export function SharedLayout({ children }) {
     return null;
   }
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      <ImageBackground
-        style={styles.image}
-        source={require("../assets/img/photo-bg.jpg")}
-      >
-        {children}
-      </ImageBackground>
-    </View>
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <View style={styles.container} onLayout={onLayoutRootView}>
+        <ImageBackground
+          style={styles.image}
+          source={require("../assets/img/photo-bg.jpg")}
+        >
+          {children}
+        </ImageBackground>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

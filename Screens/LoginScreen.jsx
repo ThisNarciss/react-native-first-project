@@ -69,8 +69,8 @@ export function LoginScreen({ navigation }) {
   };
 
   return (
-    <SharedLayout>
-      <TouchableWithoutFeedback onPress={keyboardHide}>
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <SharedLayout>
         <View
           style={{
             ...styles.container,
@@ -80,7 +80,7 @@ export function LoginScreen({ navigation }) {
           <Text style={styles.text}>Вхід</Text>
           <KeyboardAvoidingView
             style={styles.form}
-            behavior={Platform.OS == "ios" ? "padding" : "height"}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
             <TextInput
               style={{
@@ -145,8 +145,8 @@ export function LoginScreen({ navigation }) {
             </TouchableOpacity>
           </KeyboardAvoidingView>
         </View>
-      </TouchableWithoutFeedback>
-    </SharedLayout>
+      </SharedLayout>
+    </TouchableWithoutFeedback>
   );
 }
 
