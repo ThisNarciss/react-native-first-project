@@ -26,7 +26,7 @@ export function CreatePostScreen() {
   const [cameraRef, setCameraRef] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [photo, setPhoto] = useState(null);
-  // const [cameraReady, setCameraReady] = useState(false);
+
   const navigation = useNavigation();
 
   useEffect(() => {
