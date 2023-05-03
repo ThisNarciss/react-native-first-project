@@ -2,13 +2,19 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { SharedLayout } from "./SharedLayout";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 
 export function ProfileScreen() {
   const [width, setWidth] = useState(0);
+  const navigation = useNavigation();
 
   const onLayout = (event) => {
     const { width } = event.nativeEvent.layout;
     setWidth(width);
+  };
+
+  const onLogOut = () => {
+    navigation.navigate("Login");
   };
   return (
     <SharedLayout>
@@ -28,10 +34,7 @@ export function ProfileScreen() {
 
         <Text style={styles.text}>Harry Potter</Text>
 
-        <TouchableOpacity
-          style={styles.logOutBtn}
-          // onPress={onRegistration}
-        >
+        <TouchableOpacity style={styles.logOutBtn} onPress={onLogOut}>
           <Feather name="log-out" size={24} color="#BDBDBD" />
         </TouchableOpacity>
       </View>
