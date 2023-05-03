@@ -12,10 +12,10 @@ import {
   Keyboard,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 
 export function CreatePostScreen() {
@@ -29,25 +29,30 @@ export function CreatePostScreen() {
 
   const navigation = useNavigation();
 
+  const cameraRefCallback = useCallback((ref) => {
+    setCameraRef(ref);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const cleanup = () => {
+        if (cameraRef) {
+          cameraRef.stopRecording();
+        }
+      };
+      return cleanup;
+    }, [cameraRef])
+  );
+
   useEffect(() => {
-    (async () => {
+    const getPermissions = async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       await MediaLibrary.requestPermissionsAsync();
 
       setHasPermission(status === "granted");
-    })();
+    };
+    getPermissions();
   }, []);
-
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
-
-  // const onCameraReady = () => {
-  //   setCameraReady(true);
-  // };
 
   const handleBtnPublic = () => {
     (async () => {
@@ -62,8 +67,15 @@ export function CreatePostScreen() {
         longitude: location.coords.longitude,
       };
       setLocation(coords);
+
       navigation.navigate("PostsScreen", { coords, name, place, photo });
     })();
+    setName("");
+    setPlace("");
+    setPhoto(null);
+  };
+
+  const handleDelBtn = () => {
     setName("");
     setPlace("");
     setPhoto(null);
@@ -79,28 +91,28 @@ export function CreatePostScreen() {
     if (cameraRef) {
       const { uri } = await cameraRef.takePictureAsync();
       await MediaLibrary.createAssetAsync(uri);
-
       setPhoto(uri);
     }
   };
+
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
         <View style={styles.container}>
-          <View>
-            <Image
-              style={{ width: 100, height: 100 }}
-              source={{ uri: photo }}
-            />
-          </View>
           <View style={styles.cameraBox}>
-            <Camera
-              // onCameraReady={onCameraReady}
-              style={styles.camera}
-              type={type}
-              ref={setCameraRef}
-            >
+            <Camera style={styles.camera} type={type} ref={cameraRefCallback}>
+              {photo && (
+                <View style={styles.photoBox}>
+                  <Image style={{ flex: 1 }} source={{ uri: photo }} />
+                </View>
+              )}
               <TouchableOpacity
                 style={styles.cameraReverse}
                 onPress={() => {
@@ -138,7 +150,6 @@ export function CreatePostScreen() {
             <Text style={styles.addPhotoText}>Загрузити фото</Text>
           </TouchableOpacity>
           <KeyboardAvoidingView
-            // style={styles.form}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
             <TextInput
@@ -150,7 +161,7 @@ export function CreatePostScreen() {
               textContentType="name"
               enterKeyHint="send"
             />
-            <View style={styles.inputplaceBox}>
+            <View style={styles.inputPlaceBox}>
               <TextInput
                 style={{ ...styles.input, paddingLeft: 24 }}
                 value={place}
@@ -185,10 +196,7 @@ export function CreatePostScreen() {
                 Опублікувати
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.delBtn}
-              // onPress={onRegistration}
-            >
+            <TouchableOpacity style={styles.delBtn} onPress={handleDelBtn}>
               <AntDesign name="delete" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           </KeyboardAvoidingView>
@@ -206,7 +214,7 @@ const styles = StyleSheet.create({
   },
   cameraBox: {
     height: 240,
-
+    position: "relative",
     marginTop: 32,
     alignItems: "center",
     justifyContent: "center",
@@ -216,11 +224,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: "hidden",
   },
+  photoBox: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    // flex: 1,
+    zIndex: 2,
+  },
   camera: {
     position: "relative",
     flex: 1,
     width: "100%",
-    height: "100%",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -231,8 +245,11 @@ const styles = StyleSheet.create({
     flex: 0.2,
   },
   cameraBtn: {
+    position: "relative",
     borderRadius: 30,
     padding: 18,
+
+    zIndex: 9,
   },
   addPhoto: {
     marginTop: 8,
@@ -255,7 +272,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#E8E8E8",
   },
-  inputplaceBox: {
+  inputPlaceBox: {
     position: "relative",
   },
   icon: {

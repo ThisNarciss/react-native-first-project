@@ -74,6 +74,11 @@ export function RegistrationScreen({ navigation }) {
     console.log(name, email, password);
     setIsKeyboardShow(false);
     Keyboard.dismiss();
+
+    navigation.navigate("Registration", {
+      screen: "PostsScreen",
+      params: { name, email },
+    });
     navigation.navigate("Home");
     setName("");
     setEmail("");

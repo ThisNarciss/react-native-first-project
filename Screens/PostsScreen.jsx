@@ -3,13 +3,14 @@ import { useRoute } from "@react-navigation/native";
 import { Image, FlatList } from "react-native";
 import { useEffect, useState } from "react";
 import { PostsItem } from "./PostsItem";
+import { StyleSheet } from "react-native";
+
+const Separator = () => <View style={styles.separator} />;
 
 export function PostsScreen() {
   const [posts, setPosts] = useState([]);
   const [id, setId] = useState(1);
   const { params } = useRoute();
-
-  console.log(posts);
 
   useEffect(() => {
     if (params) {
@@ -18,26 +19,62 @@ export function PostsScreen() {
     }
   }, [params]);
   return (
-    <View style={{ backgroundColor: "#ffffff", flex: 1 }}>
-      <Text>PostsScreen</Text>
-      {Boolean(posts.length) && (
-        <FlatList
-          data={posts}
-          renderItem={({ item }) => (
-            <PostsItem
-              name={item.name}
-              photo={item.photo}
-              place={item.place}
-              location={item.coords}
-            />
-          )}
-          keyExtractor={(item) => item.id}
-        />
-      )}
-      <Image
-        source={require("../assets/img/log-out.svg")}
-        style={{ width: 100, height: 100 }}
-      />
+    <View style={styles.backBox}>
+      <View style={styles.container}>
+        <View style={styles.userBox}>
+          <Image style={styles.userPhoto} />
+          <View>
+            <Text style={styles.userName}>Harry Potter</Text>
+            <Text style={styles.userEmail}>harrypotter777@i.us</Text>
+          </View>
+        </View>
+        {Boolean(posts.length) && (
+          <FlatList
+            data={posts}
+            renderItem={({ item }) => (
+              <PostsItem
+                name={item.name}
+                photo={item.photo}
+                place={item.place}
+                location={item.coords}
+              />
+            )}
+            keyExtractor={(item) => item.id}
+            ItemSeparatorComponent={Separator}
+          />
+        )}
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  backBox: { backgroundColor: "#ffffff", flex: 1 },
+  container: { backgroundColor: "#ffffff", flex: 1, marginHorizontal: 16 },
+  userBox: {
+    marginTop: 32,
+    marginBottom: 32,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  userPhoto: {
+    width: 60,
+    height: 60,
+    borderRadius: 16,
+    backgroundColor: "#BDBDBD",
+  },
+  userName: {
+    fontFamily: "Roboto-Bold",
+    fontSize: 13,
+    color: "#212121",
+  },
+  userEmail: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 11,
+    color: "rgba(33, 33, 33, 0.8)",
+  },
+  separator: {
+    height: 34,
+  },
+});

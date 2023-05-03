@@ -2,8 +2,6 @@ import { TouchableOpacity } from "react-native";
 import { StyleSheet } from "react-native";
 import { Image, Text, View } from "react-native";
 import { Octicons, Ionicons } from "@expo/vector-icons";
-import { useEffect } from "react";
-import { Camera } from "expo-camera";
 import { useNavigation } from "@react-navigation/native";
 
 export const PostsItem = ({ name, photo, place, location }) => {
@@ -75,7 +73,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    marginHorizontal: 16,
   },
   image: {
     flex: 1,
