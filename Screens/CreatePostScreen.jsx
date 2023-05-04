@@ -21,7 +21,6 @@ import { Ionicons, AntDesign } from "@expo/vector-icons";
 export function CreatePostScreen() {
   const [name, setName] = useState("");
   const [place, setPlace] = useState("");
-  const [location, setLocation] = useState(null);
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
@@ -55,8 +54,8 @@ export function CreatePostScreen() {
   }, []);
 
   const handleBtnPublic = () => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
+    const getLocation = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         console.log("Permission to access location was denied");
       }
@@ -66,10 +65,9 @@ export function CreatePostScreen() {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
       };
-      setLocation(coords);
-
       navigation.navigate("PostsScreen", { coords, name, place, photo });
-    })();
+    };
+    getLocation();
     setName("");
     setPlace("");
     setPhoto(null);
