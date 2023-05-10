@@ -14,8 +14,15 @@ import { Button } from "@rneui/themed";
 import { SharedLayout } from "./SharedLayout";
 import { Image } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser, signUp } from "../redux/auth/operations";
+import { selectIsLoggedIn } from "../redux/auth/selectors";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../config";
 
 export function RegistrationScreen({ navigation }) {
+  // const isLoggedIn = useSelector(selectIsLoggedIn);
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,6 +31,18 @@ export function RegistrationScreen({ navigation }) {
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
   const [width, setWidth] = useState(0);
   const [focusedInput, setFocusedInput] = useState(null);
+  const dispatch = useDispatch();
+
+  onAuthStateChanged(auth, (user) => {
+    setIsLoggedIn(user);
+  });
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      return;
+    }
+    navigation.navigate("Home");
+  }, [isLoggedIn]);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -71,15 +90,15 @@ export function RegistrationScreen({ navigation }) {
   };
 
   const onRegistration = () => {
-    console.log(name, email, password);
     setIsKeyboardShow(false);
     Keyboard.dismiss();
+    dispatch(registerUser({ name, email, password }));
+    // if (isLoggedIn) {
+    //   navigation.navigate("Home");
+    // } else {
+    //   alert("fatal reg");
+    // }
 
-    navigation.navigate("Registration", {
-      screen: "PostsScreen",
-      params: { name, email },
-    });
-    navigation.navigate("Home");
     setName("");
     setEmail("");
     setPassword("");

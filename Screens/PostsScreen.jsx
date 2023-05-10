@@ -4,10 +4,14 @@ import { Image, FlatList } from "react-native";
 import { useEffect, useState } from "react";
 import { PostsItem } from "./PostsItem";
 import { StyleSheet } from "react-native";
+import { useSelector } from "react-redux";
+import { selectUser } from "../redux/auth/selectors";
 
 const Separator = () => <View style={styles.separator} />;
 
 export function PostsScreen() {
+  const user = useSelector(selectUser);
+  console.log(user);
   const [posts, setPosts] = useState([]);
   const [id, setId] = useState(1);
   const { params } = useRoute();
@@ -24,8 +28,8 @@ export function PostsScreen() {
         <View style={styles.userBox}>
           <Image style={styles.userPhoto} />
           <View>
-            <Text style={styles.userName}>Harry Potter</Text>
-            <Text style={styles.userEmail}>harrypotter777@i.us</Text>
+            <Text style={styles.userName}>{user.name}</Text>
+            <Text style={styles.userEmail}>{user.email}</Text>
           </View>
         </View>
         {Boolean(posts.length) && (

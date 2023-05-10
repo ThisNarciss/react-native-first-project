@@ -12,14 +12,33 @@ import {
 } from "react-native";
 import { Button } from "@rneui/themed";
 import { SharedLayout } from "./SharedLayout";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../redux/auth/operations";
+import { selectIsLoggedIn } from "../redux/auth/selectors";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../config";
 
 export function LoginScreen({ navigation }) {
+  // const isLoggedIn = useSelector(selectIsLoggedIn);
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordShow, setIsPasswordShow] = useState(true);
   const [showBtnText, setShowBtnText] = useState("Показати");
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
+  const dispatch = useDispatch();
+
+  onAuthStateChanged(auth, (user) => {
+    setIsLoggedIn(user);
+  });
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      return;
+    }
+    navigation.navigate("Home");
+  }, [isLoggedIn]);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -60,10 +79,15 @@ export function LoginScreen({ navigation }) {
   };
 
   const onLogin = () => {
-    console.log(email, password);
     setIsKeyboardShow(false);
     Keyboard.dismiss();
-    navigation.navigate("Home");
+    dispatch(loginUser({ email, password }));
+    // if (isLoggedIn) {
+    //   navigation.navigate("Home");
+    // } else {
+    //   alert("filed login");
+    // }
+
     setEmail("");
     setPassword("");
   };
