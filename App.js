@@ -1,79 +1,25 @@
 import "react-native-gesture-handler";
-import { RegistrationScreen } from "./Screens/RegistrationScreen";
-import { LoginScreen } from "./Screens/LoginScreen";
-import { NavigationContainer } from "@react-navigation/native";
-// import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createStackNavigator } from "@react-navigation/stack";
-import { Home } from "./Screens/Home";
-import { MapScreen } from "./Screens/MapScreen";
-import { CommentsScreen } from "./Screens/CommentsScreen";
-import { Provider, useDispatch, useSelector } from "react-redux";
+import { Provider } from "react-redux";
 // import { PersistGate } from "redux-persist/integration/react";
 import { store } from "./redux/store";
-import { useEffect } from "react";
-
-const Stack = createStackNavigator();
-const { Navigator, Screen } = Stack;
+import { Main } from "./Screens/Main";
+import { useFonts } from "expo-font";
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    "Roboto-Regular": require("./assets/fonts/Roboto/Roboto-Regular.ttf"),
+    "Roboto-Medium": require("./assets/fonts/Roboto/Roboto-Medium.ttf"),
+    "Roboto-Bold": require("./assets/fonts/Roboto/Roboto-Bold.ttf"),
+    "Inter-Medium": require("./assets/fonts/Inter/Inter-Medium.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
   return (
     <Provider store={store}>
       {/* <PersistGate loading={null} persistor={persistor}> */}
-      <NavigationContainer basename="/react-native-first-project">
-        <Navigator>
-          <Screen
-            name="Registration"
-            component={RegistrationScreen}
-            options={{ headerShown: false }}
-          />
-          <Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-          <Screen
-            name="Home"
-            component={Home}
-            options={{ headerShown: false }}
-          />
-          <Screen
-            name="CommentsScreen"
-            component={CommentsScreen}
-            options={{
-              title: "Коментарі",
-              headerTitleAlign: "center",
-              headerTintColor: "#212121",
-              headerTitleStyle: {
-                fontFamily: "Roboto-Medium",
-                fontSize: 17,
-                lineHeight: 22,
-              },
-              headerStyle: {
-                borderBottomWidth: 1,
-                borderBottomColor: "#E5E5E5",
-              },
-            }}
-          />
-          <Screen
-            name="MapScreen"
-            component={MapScreen}
-            options={{
-              title: "Мапа",
-              headerTitleAlign: "center",
-              headerTintColor: "#212121",
-              headerTitleStyle: {
-                fontFamily: "Roboto-Medium",
-                fontSize: 17,
-                lineHeight: 22,
-              },
-              headerStyle: {
-                borderBottomWidth: 1,
-                borderBottomColor: "#E5E5E5",
-              },
-            }}
-          />
-        </Navigator>
-      </NavigationContainer>
+      <Main />
       {/* </PersistGate> */}
     </Provider>
   );

@@ -3,7 +3,7 @@ import { StyleSheet, Dimensions } from "react-native";
 import { View, Text } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
-export function MapScreen() {
+export const MapScreen = () => {
   const {
     params: { location },
   } = useRoute();
@@ -34,7 +34,7 @@ export function MapScreen() {
       </MapView>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

@@ -26,7 +26,7 @@ const Item = ({ comment }) => (
 
 const Separator = () => <View style={styles.separator} />;
 
-export function CommentsScreen() {
+export const CommentsScreen = () => {
   const [comments, setComments] = useState([]);
   const [id, setId] = useState(1);
   const [comment, setComment] = useState("");
@@ -94,7 +94,7 @@ export function CommentsScreen() {
       </View>
     </TouchableWithoutFeedback>
   );
-}
+};
 
 const styles = StyleSheet.create({
   bgBox: {

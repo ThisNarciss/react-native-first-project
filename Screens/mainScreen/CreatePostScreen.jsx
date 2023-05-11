@@ -18,7 +18,7 @@ import * as Location from "expo-location";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 
-export function CreatePostScreen() {
+export const CreatePostScreen = () => {
   const [name, setName] = useState("");
   const [place, setPlace] = useState("");
   const [hasPermission, setHasPermission] = useState(null);
@@ -65,7 +65,7 @@ export function CreatePostScreen() {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
       };
-      navigation.navigate("PostsScreen", { coords, name, place, photo });
+      navigation.navigate("DefaultScreen", { coords, name, place, photo });
     };
     getLocation();
     setName("");
@@ -202,7 +202,7 @@ export function CreatePostScreen() {
       </View>
     </TouchableWithoutFeedback>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

@@ -1,9 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { db, auth, storage } from "../../config";
+import { auth } from "../../config";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  onAuthStateChanged,
+  signOut,
 } from "firebase/auth";
 
 // export const signUp =
@@ -39,7 +41,7 @@ export const loginUser = createAsyncThunk(
   async ({ email, password }, thunkAPI) => {
     try {
       const user = await signInWithEmailAndPassword(auth, email, password);
-      console.log(user);
+
       return {
         token: user.user.accessToken,
         userId: user.user.uid,
@@ -54,10 +56,12 @@ export const loginUser = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk(
   "authorization/logoutUser",
-  (_, thunkAPI) => {
-    return logoutUserData()
-      .then(clearAuthHeader())
-      .catch((error) => thunkAPI.rejectWithValue(error.message));
+  async (_, thunkAPI) => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
   }
 );
 
@@ -65,14 +69,19 @@ export const refreshUser = createAsyncThunk(
   "authorization/refreshUser",
   async (_, thunkAPI) => {
     try {
-      await onAuthStateChanged(auth, (user) => {
-        if (user) {
-          const userUpdateProfile = {
-            name: user.displayName,
-            userId: user.uid,
-          };
-          return userUpdateProfile;
-        }
+      return new Promise((resolve, reject) => {
+        onAuthStateChanged(auth, (user) => {
+          console.log(user);
+          if (user) {
+            const userUpdateProfile = {
+              user: { name: user.displayName, email: user.email },
+              userId: user.uid,
+            };
+            resolve(userUpdateProfile);
+          } else {
+            reject("User is not authenticated");
+          }
+        });
       });
     } catch (error) {
       thunkAPI.rejectWithValue(error.message);

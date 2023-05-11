@@ -10,19 +10,14 @@ import {
   TouchableOpacity,
   Text,
 } from "react-native";
-import { Button } from "@rneui/themed";
-import { SharedLayout } from "./SharedLayout";
+import { SharedLayout } from "../SharedLayout";
 import { Image } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { registerUser, signUp } from "../redux/auth/operations";
-import { selectIsLoggedIn } from "../redux/auth/selectors";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../config";
+import { useDispatch } from "react-redux";
+import { registerUser } from "../../redux/auth/operations";
+import { useNavigation } from "@react-navigation/native";
 
-export function RegistrationScreen({ navigation }) {
-  // const isLoggedIn = useSelector(selectIsLoggedIn);
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
+export const RegistrationScreen = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,18 +26,8 @@ export function RegistrationScreen({ navigation }) {
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
   const [width, setWidth] = useState(0);
   const [focusedInput, setFocusedInput] = useState(null);
+  const navigation = useNavigation();
   const dispatch = useDispatch();
-
-  onAuthStateChanged(auth, (user) => {
-    setIsLoggedIn(user);
-  });
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      return;
-    }
-    navigation.navigate("Home");
-  }, [isLoggedIn]);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -93,11 +78,6 @@ export function RegistrationScreen({ navigation }) {
     setIsKeyboardShow(false);
     Keyboard.dismiss();
     dispatch(registerUser({ name, email, password }));
-    // if (isLoggedIn) {
-    //   navigation.navigate("Home");
-    // } else {
-    //   alert("fatal reg");
-    // }
 
     setName("");
     setEmail("");
@@ -212,7 +192,7 @@ export function RegistrationScreen({ navigation }) {
       </TouchableWithoutFeedback>
     </SharedLayout>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

@@ -2,14 +2,14 @@ import { View, Text } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import { Image, FlatList } from "react-native";
 import { useEffect, useState } from "react";
-import { PostsItem } from "./PostsItem";
+import { PostsItem } from "../mainScreen/PostsItem";
 import { StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
-import { selectUser } from "../redux/auth/selectors";
+import { selectUser } from "../../redux/auth/selectors";
 
 const Separator = () => <View style={styles.separator} />;
 
-export function PostsScreen() {
+export const DefaultScreenPosts = () => {
   const user = useSelector(selectUser);
   console.log(user);
   const [posts, setPosts] = useState([]);
@@ -50,7 +50,7 @@ export function PostsScreen() {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   backBox: { backgroundColor: "#ffffff", flex: 1 },

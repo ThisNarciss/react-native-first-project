@@ -1,21 +1,24 @@
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
-import { SharedLayout } from "./SharedLayout";
+import { SharedLayout } from "../SharedLayout";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { logoutUser } from "../../redux/auth/operations";
 
-export function ProfileScreen() {
+export const ProfileScreen = () => {
   const [width, setWidth] = useState(0);
-  const navigation = useNavigation();
+
+  const dispatch = useDispatch();
+
+  const onLogout = () => {
+    dispatch(logoutUser());
+  };
 
   const onLayout = (event) => {
     const { width } = event.nativeEvent.layout;
     setWidth(width);
   };
 
-  const onLogOut = () => {
-    navigation.navigate("Login");
-  };
   return (
     <SharedLayout>
       <View style={styles.container}>
@@ -34,13 +37,13 @@ export function ProfileScreen() {
 
         <Text style={styles.text}>Harry Potter</Text>
 
-        <TouchableOpacity style={styles.logOutBtn} onPress={onLogOut}>
+        <TouchableOpacity style={styles.logOutBtn} onPress={onLogout}>
           <Feather name="log-out" size={24} color="#BDBDBD" />
         </TouchableOpacity>
       </View>
     </SharedLayout>
   );
-}
+};
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFFFFF",

@@ -8,11 +8,11 @@ export const PostsItem = ({ name, photo, place, location }) => {
   const navigation = useNavigation();
 
   const handleCommentBtn = () => {
-    navigation.navigate("CommentsScreen", { photo });
+    navigation.navigate("Comments", { photo });
   };
 
   const handleMapBtn = () => {
-    navigation.navigate("MapScreen", { location });
+    navigation.navigate("Map", { location });
   };
 
   return (

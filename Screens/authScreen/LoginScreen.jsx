@@ -10,35 +10,20 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import { Button } from "@rneui/themed";
-import { SharedLayout } from "./SharedLayout";
-import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../redux/auth/operations";
-import { selectIsLoggedIn } from "../redux/auth/selectors";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../config";
+import { SharedLayout } from "../SharedLayout";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../../redux/auth/operations";
+import { useNavigation } from "@react-navigation/native";
 
-export function LoginScreen({ navigation }) {
-  // const isLoggedIn = useSelector(selectIsLoggedIn);
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
+export const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordShow, setIsPasswordShow] = useState(true);
   const [showBtnText, setShowBtnText] = useState("Показати");
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
+  const navigation = useNavigation();
   const dispatch = useDispatch();
-
-  onAuthStateChanged(auth, (user) => {
-    setIsLoggedIn(user);
-  });
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      return;
-    }
-    navigation.navigate("Home");
-  }, [isLoggedIn]);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -82,12 +67,6 @@ export function LoginScreen({ navigation }) {
     setIsKeyboardShow(false);
     Keyboard.dismiss();
     dispatch(loginUser({ email, password }));
-    // if (isLoggedIn) {
-    //   navigation.navigate("Home");
-    // } else {
-    //   alert("filed login");
-    // }
-
     setEmail("");
     setPassword("");
   };
@@ -172,7 +151,7 @@ export function LoginScreen({ navigation }) {
       </SharedLayout>
     </TouchableWithoutFeedback>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
