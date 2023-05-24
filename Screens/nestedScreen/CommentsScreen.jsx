@@ -14,9 +14,12 @@ import {
   Platform,
   FlatList,
 } from "react-native";
-
+import { addDoc, collection, doc, onSnapshot } from "firebase/firestore";
 import { AntDesign } from "@expo/vector-icons";
 import { useEffect } from "react";
+import { db } from "../../config";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../redux/auth/selectors";
 
 const Item = ({ comment }) => (
   <View style={styles.item}>
@@ -27,24 +30,43 @@ const Item = ({ comment }) => (
 const Separator = () => <View style={styles.separator} />;
 
 export const CommentsScreen = () => {
+  const user = useSelector(selectUser);
   const [comments, setComments] = useState([]);
-  const [id, setId] = useState(1);
   const [comment, setComment] = useState("");
+
   const {
-    params: { photo },
+    params: { photo, postId },
   } = useRoute();
 
   useEffect(() => {
-    setId((prevState) => prevState + 1);
-  }, [comments]);
+    const mainDocRef = doc(db, `posts`, postId);
+    const subCollectionRef = collection(mainDocRef, "comments");
+    const unsubscribe = onSnapshot(subCollectionRef, (snapshot) => {
+      const data = [];
+      snapshot.forEach((doc) => {
+        data.push({ ...doc.data(), id: doc.id });
+      });
+      setComments(data);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const handleInput = (text) => setComment(text);
   const keyboardHide = () => {
     Keyboard.dismiss();
   };
 
+  const createComment = async () => {
+    const mainDocRef = doc(db, `posts`, postId);
+    const subCollectionRef = collection(mainDocRef, "comments");
+    await addDoc(subCollectionRef, { comment, nickName: user.name });
+  };
+
   const onSendBtn = () => {
-    setComments((prevState) => [...prevState, { comment, id }]);
+    createComment();
     setComment("");
   };
 
@@ -52,7 +74,6 @@ export const CommentsScreen = () => {
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.bgBox}>
         <View style={styles.container}>
-          {/* <Text>Comments</Text> */}
           <Image style={styles.image} source={{ uri: photo }} />
           {Boolean(comments.length) && (
             <FlatList

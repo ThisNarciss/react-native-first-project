@@ -80,8 +80,7 @@ export const CreatePostScreen = () => {
   const writeDataToFirestore = async () => {
     try {
       const storagePhotoRef = await uploadPhotoToStorage();
-      // console.log(storagePhotoRef);
-      const docRef = await addDoc(collection(db, `posts-${userId}`), {
+      const docRef = await addDoc(collection(db, `posts`), {
         location,
         comment,
         place,
@@ -89,21 +88,18 @@ export const CreatePostScreen = () => {
         name: user.name,
         userId,
       });
-      console.log("Document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
+    } catch (e) {}
   };
 
   const uploadPhotoToStorage = async () => {
     const response = await fetch(photo);
     const file = await response.blob();
     const postId = Date.now().toString();
-    const storageRef = ref(storage, `images-${userId}/${postId}`);
+    const storageRef = ref(storage, `images/${postId}`);
     await uploadBytes(storageRef, file);
 
     const processedPhoto = await getDownloadURL(
-      ref(storage, `images-${userId}/${postId}`)
+      ref(storage, `images/${postId}`)
     );
     return processedPhoto;
   };
@@ -111,13 +107,13 @@ export const CreatePostScreen = () => {
   const handleBtnPublic = () => {
     writeDataToFirestore();
     navigation.navigate("DefaultScreen");
-    setName("");
+    setComment("");
     setPlace("");
     setPhoto(null);
   };
 
   const handleDelBtn = () => {
-    setName("");
+    setComment("");
     setPlace("");
     setPhoto(null);
   };
@@ -195,7 +191,7 @@ export const CreatePostScreen = () => {
           >
             <TextInput
               style={styles.input}
-              value={name}
+              value={comment}
               onChangeText={nameHandler}
               placeholder="Назва..."
               placeholderTextColor={"#BDBDBD"}
@@ -223,7 +219,7 @@ export const CreatePostScreen = () => {
               style={{
                 ...styles.buttonBox,
                 backgroundColor: `${
-                  name && place && photo ? "#FF6C00" : "#F6F6F6"
+                  comment && place && photo ? "#FF6C00" : "#F6F6F6"
                 }`,
               }}
               onPress={handleBtnPublic}
@@ -231,7 +227,7 @@ export const CreatePostScreen = () => {
               <Text
                 style={{
                   ...styles.buttonText,
-                  color: `${name && place && photo ? "#ffffff" : "#BDBDBD"}`,
+                  color: `${comment && place && photo ? "#ffffff" : "#BDBDBD"}`,
                 }}
               >
                 Опублікувати

@@ -1,16 +1,46 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
-import { SharedLayout } from "../SharedLayout";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  ImageBackground,
+} from "react-native";
+
 import { AntDesign, Feather } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/auth/operations";
-import { selectUser } from "../../redux/auth/selectors";
+import { selectUser, selectUserId } from "../../redux/auth/selectors";
+import { PostsItem } from "./PostsItem";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { db } from "../../config";
+
+const Separator = () => <View style={styles.separator} />;
 
 export const ProfileScreen = () => {
   const { name } = useSelector(selectUser);
+  const userId = useSelector(selectUserId);
+  const [posts, setPosts] = useState([]);
   const [width, setWidth] = useState(0);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const q = query(collection(db, "posts"), where("userId", "==", userId));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = [];
+      snapshot.forEach((doc) => {
+        data.push({ ...doc.data(), id: doc.id });
+      });
+      setPosts(data);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const onLogout = () => {
     dispatch(logoutUser());
@@ -22,44 +52,78 @@ export const ProfileScreen = () => {
   };
 
   return (
-    <SharedLayout>
-      <View style={styles.container}>
-        <View
-          onLayout={onLayout}
-          style={{
-            ...styles.photoBox,
-            transform: [{ translateX: -0.5 * width }],
-          }}
-        >
-          <Image style={styles.image} />
-          <TouchableOpacity style={styles.icon}>
-            <AntDesign name="pluscircleo" size={25} color="#FF6C00" />
-          </TouchableOpacity>
+    <View style={styles.bg}>
+      <ImageBackground
+        style={styles.imageBg}
+        source={require("../../assets/img/photo-bg.jpg")}
+      >
+        <View style={styles.container}>
+          <View style={styles.board}>
+            <View
+              onLayout={onLayout}
+              style={{
+                ...styles.photoBox,
+                transform: [{ translateX: -0.5 * width }],
+              }}
+            >
+              <Image style={styles.image} />
+              <TouchableOpacity style={styles.icon}>
+                <AntDesign name="pluscircleo" size={25} color="#FF6C00" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.text}>{name}</Text>
+
+            <TouchableOpacity style={styles.logOutBtn} onPress={onLogout}>
+              <Feather name="log-out" size={24} color="#BDBDBD" />
+            </TouchableOpacity>
+
+            {Boolean(posts.length) && (
+              <FlatList
+                data={posts}
+                renderItem={({ item }) => (
+                  <PostsItem
+                    comment={item.comment}
+                    photo={item.photo}
+                    place={item.place}
+                    location={item.location}
+                    id={item.id}
+                  />
+                )}
+                keyExtractor={(item) => item.id}
+                ItemSeparatorComponent={Separator}
+              />
+            )}
+          </View>
         </View>
-
-        <Text style={styles.text}>{name}</Text>
-
-        <TouchableOpacity style={styles.logOutBtn} onPress={onLogout}>
-          <Feather name="log-out" size={24} color="#BDBDBD" />
-        </TouchableOpacity>
-      </View>
-    </SharedLayout>
+      </ImageBackground>
+    </View>
   );
 };
 const styles = StyleSheet.create({
+  bg: {
+    flex: 1,
+  },
+  board: { marginHorizontal: 16, flex: 1 },
+
   container: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#ffffff",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     paddingTop: 92,
-
+    flex: 0.8,
     position: "relative",
+  },
+  imageBg: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "flex-end",
   },
   photoBox: {
     position: "absolute",
     justifyContent: "center",
     alignItems: "center",
-    top: -60,
+    top: -150,
     left: "50%",
   },
   image: {
@@ -81,7 +145,10 @@ const styles = StyleSheet.create({
 
   logOutBtn: {
     position: "absolute",
-    right: 16,
-    top: 22,
+    right: 0,
+    top: -70,
+  },
+  separator: {
+    height: 34,
   },
 });

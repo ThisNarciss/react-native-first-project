@@ -1,29 +1,32 @@
 import { View, Text } from "react-native";
-import { useRoute } from "@react-navigation/native";
+
 import { Image, FlatList } from "react-native";
 import { useEffect, useState } from "react";
 import { PostsItem } from "../mainScreen/PostsItem";
 import { StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
-import { selectUser, selectUserId } from "../../redux/auth/selectors";
+import { selectUser } from "../../redux/auth/selectors";
 import { db } from "../../config";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 
 const Separator = () => <View style={styles.separator} />;
 
 export const DefaultScreenPosts = () => {
   const user = useSelector(selectUser);
-  const userId = useSelector(selectUserId);
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    (async () => {
-      const querySnapshot = await getDocs(collection(db, `posts-${userId}`));
-
-      querySnapshot.forEach((doc) => {
-        setPosts((prevState) => [...prevState, { ...doc.data(), id: doc.id }]);
+    const unsubscribe = onSnapshot(collection(db, `posts`), (snapshot) => {
+      const data = [];
+      snapshot.forEach((doc) => {
+        data.push({ ...doc.data(), id: doc.id });
       });
-    })();
+      setPosts(data);
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return (
@@ -45,6 +48,7 @@ export const DefaultScreenPosts = () => {
                 photo={item.photo}
                 place={item.place}
                 location={item.location}
+                id={item.id}
               />
             )}
             keyExtractor={(item) => item.id}
@@ -57,8 +61,15 @@ export const DefaultScreenPosts = () => {
 };
 
 const styles = StyleSheet.create({
-  backBox: { backgroundColor: "#ffffff", flex: 1 },
-  container: { backgroundColor: "#ffffff", flex: 1, marginHorizontal: 16 },
+  backBox: {
+    backgroundColor: "#ffffff",
+    flex: 1,
+  },
+  container: {
+    backgroundColor: "#ffffff",
+    flex: 1,
+    marginHorizontal: 16,
+  },
   userBox: {
     marginTop: 32,
     marginBottom: 32,

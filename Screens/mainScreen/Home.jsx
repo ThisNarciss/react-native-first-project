@@ -4,19 +4,14 @@ import { CreatePostScreen } from "./CreatePostScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { TouchableOpacity } from "react-native";
 import { Feather, Ionicons, Entypo, AntDesign } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
-import { logoutUser } from "../../redux/auth/operations";
+
 import { useNavigation } from "@react-navigation/native";
 
 const Tab = createBottomTabNavigator();
 const { Navigator, Screen } = Tab;
 
 export const Home = () => {
-  const dispatch = useDispatch();
   const navigation = useNavigation();
-  const onLogout = () => {
-    dispatch(logoutUser());
-  };
 
   return (
     <Navigator
@@ -39,29 +34,14 @@ export const Home = () => {
         name="PostsScreen"
         component={PostsScreen}
         options={{
+          headerShown: false,
           title: "Публікації",
+
           tabBarIcon: () => (
             <Ionicons name="ios-grid-outline" size={24} color="#212121" />
           ),
-          headerTitleAlign: "center",
-          headerTintColor: "#212121",
-          headerTitleStyle: {
-            fontFamily: "Roboto-Medium",
-            fontSize: 17,
-            lineHeight: 22,
-          },
-          headerRightContainerStyle: { marginRight: 16 },
-          headerStyle: {
-            borderBottomWidth: 1,
-            borderBottomColor: "#E5E5E5",
-          },
-          tabBarIconStyle: { opacity: 0.8 },
 
-          headerRight: () => (
-            <TouchableOpacity onPress={onLogout}>
-              <Feather name="log-out" size={24} color="#BDBDBD" />
-            </TouchableOpacity>
-          ),
+          tabBarIconStyle: { opacity: 0.8 },
         }}
       />
       <Screen

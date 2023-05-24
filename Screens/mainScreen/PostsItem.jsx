@@ -3,12 +3,32 @@ import { StyleSheet } from "react-native";
 import { Image, Text, View } from "react-native";
 import { Octicons, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { collection, doc, onSnapshot } from "firebase/firestore";
+import { useEffect, useState } from "react";
 
-export const PostsItem = ({ comment, photo, place, location }) => {
+import { db } from "../../config";
+
+export const PostsItem = ({ comment, photo, place, location, id }) => {
+  const [commentsQuantity, setCommentsQuantity] = useState(0);
   const navigation = useNavigation();
 
+  useEffect(() => {
+    const mainDocRef = doc(db, `posts`, id);
+    const subCollectionRef = collection(mainDocRef, "comments");
+    const unsubscribe = onSnapshot(subCollectionRef, (snapshot) => {
+      const data = [];
+      snapshot.forEach((doc) => {
+        data.push({ ...doc.data(), id: doc.id });
+      });
+      setCommentsQuantity(data.length);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   const handleCommentBtn = () => {
-    navigation.navigate("Comments", { photo });
+    navigation.navigate("Comments", { photo, postId: id });
   };
 
   const handleMapBtn = () => {
@@ -45,7 +65,7 @@ export const PostsItem = ({ comment, photo, place, location }) => {
               textDecorationLine: "none",
             }}
           >
-            0
+            {commentsQuantity}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
