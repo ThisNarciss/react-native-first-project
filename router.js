@@ -8,7 +8,7 @@ const { Navigator, Screen } = Stack;
 export const useRoute = (isAuth) => {
   if (!isAuth) {
     return (
-      <Navigator>
+      <Navigator initialRouteName="Login">
         <Screen
           name="Registration"
           component={RegistrationScreen}

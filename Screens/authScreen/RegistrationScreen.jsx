@@ -13,11 +13,15 @@ import {
 import { SharedLayout } from "../SharedLayout";
 import { Image } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../../redux/auth/operations";
 import { useNavigation } from "@react-navigation/native";
+import { selectErrorAuth } from "../../redux/auth/selectors";
+import { Notify } from "notiflix";
+import PushNotification from "react-native-push-notification";
 
 export const RegistrationScreen = () => {
+  const error = useSelector(selectErrorAuth);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,6 +32,15 @@ export const RegistrationScreen = () => {
   const [focusedInput, setFocusedInput] = useState(null);
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+    // console.log(error);
+
+    alert(`${error}`);
+  }, [error]);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(

@@ -48,7 +48,6 @@ export const loginUser = createAsyncThunk(
         user: { email: user.user.email, name: user.user.displayName },
       };
     } catch (error) {
-      console.log(error);
       return thunkAPI.rejectWithValue(error.message);
     }
   }
@@ -71,7 +70,7 @@ export const refreshUser = createAsyncThunk(
     try {
       return new Promise((resolve, reject) => {
         onAuthStateChanged(auth, (user) => {
-          console.log(user);
+          // console.log(user);
           if (user) {
             const userUpdateProfile = {
               user: { name: user.displayName, email: user.email },

@@ -17,14 +17,22 @@ import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { db, storage } from "../../config";
+import { addDoc, collection } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { useSelector } from "react-redux";
+import { selectUser, selectUserId } from "../../redux/auth/selectors";
 
 export const CreatePostScreen = () => {
-  const [name, setName] = useState("");
+  const user = useSelector(selectUser);
+  const userId = useSelector(selectUserId);
+  const [comment, setComment] = useState("");
   const [place, setPlace] = useState("");
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [photo, setPhoto] = useState(null);
+  const [location, setLocation] = useState(null);
 
   const navigation = useNavigation();
 
@@ -44,6 +52,22 @@ export const CreatePostScreen = () => {
   );
 
   useEffect(() => {
+    const getLocation = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
+      setLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+    };
+    getLocation();
+  }, []);
+
+  useEffect(() => {
     const getPermissions = async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       await MediaLibrary.requestPermissionsAsync();
@@ -53,21 +77,40 @@ export const CreatePostScreen = () => {
     getPermissions();
   }, []);
 
-  const handleBtnPublic = () => {
-    const getLocation = async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission to access location was denied");
-      }
+  const writeDataToFirestore = async () => {
+    try {
+      const storagePhotoRef = await uploadPhotoToStorage();
+      // console.log(storagePhotoRef);
+      const docRef = await addDoc(collection(db, `posts-${userId}`), {
+        location,
+        comment,
+        place,
+        photo: storagePhotoRef,
+        name: user.name,
+        userId,
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
 
-      let location = await Location.getCurrentPositionAsync({});
-      const coords = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-      navigation.navigate("DefaultScreen", { coords, name, place, photo });
-    };
-    getLocation();
+  const uploadPhotoToStorage = async () => {
+    const response = await fetch(photo);
+    const file = await response.blob();
+    const postId = Date.now().toString();
+    const storageRef = ref(storage, `images-${userId}/${postId}`);
+    await uploadBytes(storageRef, file);
+
+    const processedPhoto = await getDownloadURL(
+      ref(storage, `images-${userId}/${postId}`)
+    );
+    return processedPhoto;
+  };
+
+  const handleBtnPublic = () => {
+    writeDataToFirestore();
+    navigation.navigate("DefaultScreen");
     setName("");
     setPlace("");
     setPhoto(null);
@@ -82,7 +125,7 @@ export const CreatePostScreen = () => {
   const keyboardHide = () => {
     Keyboard.dismiss();
   };
-  const nameHandler = (text) => setName(text);
+  const nameHandler = (text) => setComment(text);
   const placeHandler = (text) => setPlace(text);
 
   const takePhoto = async () => {

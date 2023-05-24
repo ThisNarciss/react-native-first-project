@@ -2,10 +2,12 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { SharedLayout } from "../SharedLayout";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/auth/operations";
+import { selectUser } from "../../redux/auth/selectors";
 
 export const ProfileScreen = () => {
+  const { name } = useSelector(selectUser);
   const [width, setWidth] = useState(0);
 
   const dispatch = useDispatch();
@@ -35,7 +37,7 @@ export const ProfileScreen = () => {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.text}>Harry Potter</Text>
+        <Text style={styles.text}>{name}</Text>
 
         <TouchableOpacity style={styles.logOutBtn} onPress={onLogout}>
           <Feather name="log-out" size={24} color="#BDBDBD" />

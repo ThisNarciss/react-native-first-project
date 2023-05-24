@@ -5,23 +5,27 @@ import { useEffect, useState } from "react";
 import { PostsItem } from "../mainScreen/PostsItem";
 import { StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/auth/selectors";
+import { selectUser, selectUserId } from "../../redux/auth/selectors";
+import { db } from "../../config";
+import { collection, getDocs } from "firebase/firestore";
 
 const Separator = () => <View style={styles.separator} />;
 
 export const DefaultScreenPosts = () => {
   const user = useSelector(selectUser);
-  console.log(user);
+  const userId = useSelector(selectUserId);
   const [posts, setPosts] = useState([]);
-  const [id, setId] = useState(1);
-  const { params } = useRoute();
 
   useEffect(() => {
-    if (params) {
-      setPosts((prevState) => [...prevState, { ...params, id }]);
-      setId((prevState) => prevState + 1);
-    }
-  }, [params]);
+    (async () => {
+      const querySnapshot = await getDocs(collection(db, `posts-${userId}`));
+
+      querySnapshot.forEach((doc) => {
+        setPosts((prevState) => [...prevState, { ...doc.data(), id: doc.id }]);
+      });
+    })();
+  }, []);
+
   return (
     <View style={styles.backBox}>
       <View style={styles.container}>
@@ -37,10 +41,10 @@ export const DefaultScreenPosts = () => {
             data={posts}
             renderItem={({ item }) => (
               <PostsItem
-                name={item.name}
+                comment={item.comment}
                 photo={item.photo}
                 place={item.place}
-                location={item.coords}
+                location={item.location}
               />
             )}
             keyExtractor={(item) => item.id}

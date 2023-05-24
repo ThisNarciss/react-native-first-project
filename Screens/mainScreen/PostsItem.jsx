@@ -4,7 +4,7 @@ import { Image, Text, View } from "react-native";
 import { Octicons, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-export const PostsItem = ({ name, photo, place, location }) => {
+export const PostsItem = ({ comment, photo, place, location }) => {
   const navigation = useNavigation();
 
   const handleCommentBtn = () => {
@@ -19,7 +19,7 @@ export const PostsItem = ({ name, photo, place, location }) => {
     <View style={styles.container}>
       <Image style={styles.image} source={{ uri: photo }} />
 
-      <Text style={styles.textName}>{name}</Text>
+      <Text style={styles.textName}>{comment}</Text>
       <View
         style={{
           marginTop: 10,
