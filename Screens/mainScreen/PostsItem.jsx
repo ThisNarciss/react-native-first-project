@@ -28,7 +28,10 @@ export const PostsItem = ({ comment, photo, place, location, id }) => {
   }, []);
 
   const handleCommentBtn = () => {
-    navigation.navigate("Comments", { photo, postId: id });
+    navigation.navigate("Comments", {
+      photo,
+      postId: id,
+    });
   };
 
   const handleMapBtn = () => {
@@ -57,11 +60,15 @@ export const PostsItem = ({ comment, photo, place, location, id }) => {
           }}
           onPress={handleCommentBtn}
         >
-          <Octicons name="comment" size={20} color="#BDBDBD" />
+          <Octicons
+            name="comment"
+            size={20}
+            color={commentsQuantity ? "#FF6C00" : "#BDBDBD"}
+          />
           <Text
             style={{
               ...styles.textLoc,
-              color: "#BDBDBD",
+              color: `${commentsQuantity ? "#212121" : "#BDBDBD"}`,
               textDecorationLine: "none",
             }}
           >

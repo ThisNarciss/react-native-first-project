@@ -16,12 +16,24 @@ import { AntDesign } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../../redux/auth/operations";
 import { useNavigation } from "@react-navigation/native";
-import { selectErrorAuth } from "../../redux/auth/selectors";
-import { Notify } from "notiflix";
+import {
+  selectErrorAuth,
+  selectUser,
+  selectUserId,
+} from "../../redux/auth/selectors";
+import {
+  requestMediaLibraryPermissionsAsync,
+  launchImageLibraryAsync,
+} from "expo-image-picker";
+
 import PushNotification from "react-native-push-notification";
+import { storage } from "../../config";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 export const RegistrationScreen = () => {
   const error = useSelector(selectErrorAuth);
+  const userId = useSelector(selectUserId);
+  const user = useSelector(selectUser);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,6 +42,7 @@ export const RegistrationScreen = () => {
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
   const [width, setWidth] = useState(0);
   const [focusedInput, setFocusedInput] = useState(null);
+  const [avatar, setAvatar] = useState(null);
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -37,8 +50,6 @@ export const RegistrationScreen = () => {
     if (!error) {
       return;
     }
-    // console.log(error);
-
     alert(`${error}`);
   }, [error]);
 
@@ -57,6 +68,39 @@ export const RegistrationScreen = () => {
       keyboardDidHideListener.remove();
     };
   }, []);
+
+  const uploadPhotoToStorage = async (photo) => {
+    const response = await fetch(photo);
+    const file = await response.blob();
+    const postId = Date.now().toString();
+    const storageRef = ref(storage, `avatar/${postId}`);
+    await uploadBytes(storageRef, file);
+
+    const processedPhoto = await getDownloadURL(
+      ref(storage, `avatar/${postId}`)
+    );
+    return processedPhoto;
+  };
+
+  const pickImageFromGallery = async () => {
+    if (avatar) {
+      setAvatar(null);
+      return;
+    }
+    const { status } = await requestMediaLibraryPermissionsAsync();
+
+    if (status !== "granted") {
+      console.log("Permission to access media library was denied.");
+      return;
+    }
+
+    const result = await launchImageLibraryAsync();
+
+    if (!result.canceled) {
+      const storageAvatarRef = await uploadPhotoToStorage(result.assets[0].uri);
+      setAvatar(storageAvatarRef);
+    }
+  };
 
   const onLayout = (event) => {
     const { width } = event.nativeEvent.layout;
@@ -90,8 +134,9 @@ export const RegistrationScreen = () => {
   const onRegistration = () => {
     setIsKeyboardShow(false);
     Keyboard.dismiss();
-    dispatch(registerUser({ name, email, password }));
-
+    dispatch(registerUser({ name, email, password, avatar }));
+    console.log(user);
+    console.log(userId);
     setName("");
     setEmail("");
     setPassword("");
@@ -113,9 +158,22 @@ export const RegistrationScreen = () => {
               transform: [{ translateX: -0.5 * width }],
             }}
           >
-            <Image style={styles.image} />
-            <TouchableOpacity style={styles.icon}>
-              <AntDesign name="pluscircleo" size={25} color="#FF6C00" />
+            <Image style={styles.image} source={{ uri: avatar }} />
+            <TouchableOpacity
+              onPress={pickImageFromGallery}
+              style={{
+                ...styles.icon,
+
+                transform: avatar
+                  ? [{ rotateZ: "45deg" }]
+                  : [{ rotateZ: "0deg" }],
+              }}
+            >
+              <AntDesign
+                name="pluscircleo"
+                size={25}
+                color={avatar ? "#E8E8E8" : "#FF6C00"}
+              />
             </TouchableOpacity>
           </View>
 
@@ -231,7 +289,13 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: "#F6F6F6",
   },
-  icon: { position: "absolute", right: -12, top: 81 },
+  icon: {
+    position: "absolute",
+    right: -12,
+    top: 81,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 50,
+  },
   text: {
     fontFamily: "Roboto-Medium",
     fontSize: 30,

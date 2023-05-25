@@ -8,26 +8,20 @@ import {
   signOut,
 } from "firebase/auth";
 
-// export const signUp =
-//   ({ name, email, password }) =>
-//   async (dispatch) => {
-//     const user = await createUserWithEmailAndPassword(auth, email, password);
-//     // console.log(user);
-//     return user;
-//   };
-
 export const registerUser = createAsyncThunk(
   "authorization/registerUser",
-  async ({ name, email, password }, thunkAPI) => {
+  async ({ name, email, password, avatar }, thunkAPI) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(auth.currentUser, {
         displayName: name,
+        photoURL: avatar,
       });
       const updateUser = auth.currentUser;
       return {
         token: updateUser.accessToken,
         userId: updateUser.uid,
+        avatar: updateUser.photoURL,
         user: { email: updateUser.email, name: updateUser.displayName },
       };
     } catch (error) {
@@ -45,6 +39,7 @@ export const loginUser = createAsyncThunk(
       return {
         token: user.user.accessToken,
         userId: user.user.uid,
+        avatar: user.user.photoURL,
         user: { email: user.user.email, name: user.user.displayName },
       };
     } catch (error) {
@@ -75,6 +70,7 @@ export const refreshUser = createAsyncThunk(
             const userUpdateProfile = {
               user: { name: user.displayName, email: user.email },
               userId: user.uid,
+              avatar: user.photoURL,
             };
             resolve(userUpdateProfile);
           } else {
@@ -84,6 +80,23 @@ export const refreshUser = createAsyncThunk(
       });
     } catch (error) {
       thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updateUserPhoto = createAsyncThunk(
+  "authorization/updatePhoto",
+  async (avatar, thunkAPI) => {
+    try {
+      await updateProfile(auth.currentUser, {
+        photoURL: avatar,
+      });
+      const updateUser = auth.currentUser;
+      return {
+        avatar: updateUser.photoURL,
+      };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
     }
   }
 );

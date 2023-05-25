@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { PostsItem } from "../mainScreen/PostsItem";
 import { StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/auth/selectors";
+import { selectAvatar, selectUser } from "../../redux/auth/selectors";
 import { db } from "../../config";
 import { collection, onSnapshot } from "firebase/firestore";
 
@@ -13,6 +13,7 @@ const Separator = () => <View style={styles.separator} />;
 
 export const DefaultScreenPosts = () => {
   const user = useSelector(selectUser);
+  const avatar = useSelector(selectAvatar);
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -33,7 +34,7 @@ export const DefaultScreenPosts = () => {
     <View style={styles.backBox}>
       <View style={styles.container}>
         <View style={styles.userBox}>
-          <Image style={styles.userPhoto} />
+          <Image style={styles.userPhoto} source={{ uri: avatar }} />
           <View>
             <Text style={styles.userName}>{user.name}</Text>
             <Text style={styles.userEmail}>{user.email}</Text>

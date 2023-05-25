@@ -14,8 +14,10 @@ import { SharedLayout } from "../SharedLayout";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../redux/auth/operations";
 import { useNavigation } from "@react-navigation/native";
+import { selectErrorAuth } from "../../redux/auth/selectors";
 
 export const LoginScreen = () => {
+  const error = useSelector(selectErrorAuth);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordShow, setIsPasswordShow] = useState(true);
@@ -24,6 +26,13 @@ export const LoginScreen = () => {
   const [focusedInput, setFocusedInput] = useState(null);
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+    alert(`${error}`);
+  }, [error]);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(

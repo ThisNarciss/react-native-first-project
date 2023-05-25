@@ -19,11 +19,36 @@ import { AntDesign } from "@expo/vector-icons";
 import { useEffect } from "react";
 import { db } from "../../config";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/auth/selectors";
+import { selectAvatar, selectUser } from "../../redux/auth/selectors";
 
-const Item = ({ comment }) => (
-  <View style={styles.item}>
-    <Text style={styles.comment}>{comment}</Text>
+const month = [
+  "січня",
+  "лютого",
+  "березня",
+  "квітня",
+  "травня",
+  "червня",
+  "липня",
+  "серпня",
+  "вересня",
+  "жовтня",
+  "листопада",
+  "грудня",
+];
+const options = {
+  timeZone: "Europe/Kiev",
+  hour12: false,
+  hour: "numeric",
+  minute: "numeric",
+};
+
+const Item = ({ comment, avatar, commentDate }) => (
+  <View style={styles.commentBox}>
+    <View style={styles.item}>
+      <Text style={styles.comment}>{comment}</Text>
+      <Text style={styles.date}>{commentDate}</Text>
+    </View>
+    <Image style={styles.userPhoto} source={{ uri: avatar }} />
   </View>
 );
 
@@ -31,6 +56,7 @@ const Separator = () => <View style={styles.separator} />;
 
 export const CommentsScreen = () => {
   const user = useSelector(selectUser);
+  const avatar = useSelector(selectAvatar);
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
 
@@ -60,9 +86,21 @@ export const CommentsScreen = () => {
   };
 
   const createComment = async () => {
+    const date = new Date();
+    const formatter = new Intl.DateTimeFormat("default", options);
+    const timeString = formatter.format(date);
+    const commentDate = `${date.getDate().toString().padStart(2, "0")} ${
+      month[date.getMonth()]
+    }, ${date.getFullYear()} | ${timeString}`;
+
     const mainDocRef = doc(db, `posts`, postId);
     const subCollectionRef = collection(mainDocRef, "comments");
-    await addDoc(subCollectionRef, { comment, nickName: user.name });
+    await addDoc(subCollectionRef, {
+      comment,
+      nickName: user.name,
+      avatar,
+      commentDate,
+    });
   };
 
   const onSendBtn = () => {
@@ -78,7 +116,13 @@ export const CommentsScreen = () => {
           {Boolean(comments.length) && (
             <FlatList
               data={comments}
-              renderItem={({ item }) => <Item comment={item.comment} />}
+              renderItem={({ item }) => (
+                <Item
+                  comment={item.comment}
+                  avatar={item.avatar}
+                  commentDate={item.commentDate}
+                />
+              )}
               keyExtractor={(item) => item.id}
               ItemSeparatorComponent={Separator}
             />
@@ -135,7 +179,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 32,
   },
-  commentBox: { position: "relative" },
+  userPhoto: {
+    width: 28,
+    height: 28,
+    borderRadius: 16,
+    backgroundColor: "#BDBDBD",
+  },
+  commentBox: { flexDirection: "row", gap: 16, justifyContent: "center" },
   input: {
     fontFamily: "Inter-Medium",
     fontSize: 16,
@@ -154,6 +204,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   item: {
+    flex: 1,
     padding: 16,
     borderTopLeftRadius: 6,
     borderBottomLeftRadius: 6,
@@ -164,6 +215,12 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Regular",
     fontSize: 13,
     color: "#212121",
+    marginBottom: 8,
+  },
+  date: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 10,
+    color: "#BDBDBD",
   },
 
   separator: {

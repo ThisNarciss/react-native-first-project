@@ -11,21 +11,39 @@ import {
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutUser } from "../../redux/auth/operations";
-import { selectUser, selectUserId } from "../../redux/auth/selectors";
+import { logoutUser, updateUserPhoto } from "../../redux/auth/operations";
+import {
+  selectAvatar,
+  selectUser,
+  selectUserId,
+} from "../../redux/auth/selectors";
 import { PostsItem } from "./PostsItem";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { db } from "../../config";
+import { db, storage } from "../../config";
+import {
+  launchImageLibraryAsync,
+  requestMediaLibraryPermissionsAsync,
+} from "expo-image-picker";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const Separator = () => <View style={styles.separator} />;
 
 export const ProfileScreen = () => {
   const { name } = useSelector(selectUser);
   const userId = useSelector(selectUserId);
+  const avatar = useSelector(selectAvatar);
   const [posts, setPosts] = useState([]);
   const [width, setWidth] = useState(0);
+  const [newAvatar, setNewAvatar] = useState(null);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!newAvatar) {
+      return;
+    }
+    dispatch(updateUserPhoto(newAvatar));
+  }, [newAvatar]);
 
   useEffect(() => {
     const q = query(collection(db, "posts"), where("userId", "==", userId));
@@ -41,6 +59,35 @@ export const ProfileScreen = () => {
       unsubscribe();
     };
   }, []);
+
+  const uploadPhotoToStorage = async (photo) => {
+    const response = await fetch(photo);
+    const file = await response.blob();
+    const postId = Date.now().toString();
+    const storageRef = ref(storage, `avatar/${postId}`);
+    await uploadBytes(storageRef, file);
+
+    const processedPhoto = await getDownloadURL(
+      ref(storage, `avatar/${postId}`)
+    );
+    return processedPhoto;
+  };
+
+  const pickImageFromGallery = async () => {
+    const { status } = await requestMediaLibraryPermissionsAsync();
+
+    if (status !== "granted") {
+      console.log("Permission to access media library was denied.");
+      return;
+    }
+
+    const result = await launchImageLibraryAsync();
+
+    if (!result.canceled) {
+      const storageAvatarRef = await uploadPhotoToStorage(result.assets[0].uri);
+      setNewAvatar(storageAvatarRef);
+    }
+  };
 
   const onLogout = () => {
     dispatch(logoutUser());
@@ -66,9 +113,21 @@ export const ProfileScreen = () => {
                 transform: [{ translateX: -0.5 * width }],
               }}
             >
-              <Image style={styles.image} />
-              <TouchableOpacity style={styles.icon}>
-                <AntDesign name="pluscircleo" size={25} color="#FF6C00" />
+              <Image style={styles.image} source={{ uri: avatar }} />
+              <TouchableOpacity
+                style={{
+                  ...styles.icon,
+                  transform: avatar
+                    ? [{ rotateZ: "45deg" }]
+                    : [{ rotateZ: "0deg" }],
+                }}
+                onPress={pickImageFromGallery}
+              >
+                <AntDesign
+                  name="pluscircleo"
+                  size={25}
+                  color={avatar ? "#E8E8E8" : "#FF6C00"}
+                />
               </TouchableOpacity>
             </View>
 
@@ -100,6 +159,7 @@ export const ProfileScreen = () => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   bg: {
     flex: 1,

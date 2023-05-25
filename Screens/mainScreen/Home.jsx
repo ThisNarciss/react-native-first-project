@@ -18,6 +18,7 @@ export const Home = () => {
       initialRouteName="PostsScreen"
       backBehavior="order"
       screenOptions={{
+        tabBarHideOnKeyboard: true,
         tabBarShowLabel: false,
         tabBarStyle: {
           paddingBottom: 10,
@@ -36,11 +37,9 @@ export const Home = () => {
         options={{
           headerShown: false,
           title: "Публікації",
-
           tabBarIcon: () => (
             <Ionicons name="ios-grid-outline" size={24} color="#212121" />
           ),
-
           tabBarIconStyle: { opacity: 0.8 },
         }}
       />
