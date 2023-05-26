@@ -80,6 +80,10 @@ export const CommentsScreen = () => {
     };
   }, []);
 
+  const sortedComments = comments.sort((a, b) => {
+    return new Date(a.createdAt) - new Date(b.createdAt);
+  });
+
   const handleInput = (text) => setComment(text);
   const keyboardHide = () => {
     Keyboard.dismiss();
@@ -87,6 +91,7 @@ export const CommentsScreen = () => {
 
   const createComment = async () => {
     const date = new Date();
+    const newDate = Date.now();
     const formatter = new Intl.DateTimeFormat("default", options);
     const timeString = formatter.format(date);
     const commentDate = `${date.getDate().toString().padStart(2, "0")} ${
@@ -100,6 +105,7 @@ export const CommentsScreen = () => {
       nickName: user.name,
       avatar,
       commentDate,
+      createdAt: newDate,
     });
   };
 
@@ -115,7 +121,7 @@ export const CommentsScreen = () => {
           <Image style={styles.image} source={{ uri: photo }} />
           {Boolean(comments.length) && (
             <FlatList
-              data={comments}
+              data={sortedComments}
               renderItem={({ item }) => (
                 <Item
                   comment={item.comment}

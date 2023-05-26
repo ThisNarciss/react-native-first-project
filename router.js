@@ -2,6 +2,8 @@ import { Home } from "./Screens/mainScreen/Home";
 import { RegistrationScreen } from "./Screens/authScreen/RegistrationScreen";
 import { LoginScreen } from "./Screens/authScreen/LoginScreen";
 import { createStackNavigator } from "@react-navigation/stack";
+import { MapScreen } from "./Screens/nestedScreen/MapScreen";
+import { CommentsScreen } from "./Screens/nestedScreen/CommentsScreen";
 const Stack = createStackNavigator();
 const { Navigator, Screen } = Stack;
 
@@ -10,17 +12,57 @@ export const useRoute = (isAuth) => {
     return (
       <Navigator initialRouteName="Login">
         <Screen
-          name="Registration"
-          component={RegistrationScreen}
+          name="Login"
+          component={LoginScreen}
           options={{ headerShown: false }}
         />
         <Screen
-          name="Login"
-          component={LoginScreen}
+          name="Registration"
+          component={RegistrationScreen}
           options={{ headerShown: false }}
         />
       </Navigator>
     );
   }
-  return <Home />;
+  return (
+    <Navigator initialRouteName="Home">
+      <Screen name="Home" component={Home} options={{ headerShown: false }} />
+      <Screen
+        name="Comments"
+        component={CommentsScreen}
+        options={{
+          title: "Коментарі",
+          headerTitleAlign: "center",
+          headerTintColor: "#212121",
+          headerTitleStyle: {
+            fontFamily: "Roboto-Medium",
+            fontSize: 17,
+            lineHeight: 22,
+          },
+          headerStyle: {
+            borderBottomWidth: 1,
+            borderBottomColor: "#E5E5E5",
+          },
+        }}
+      />
+      <Screen
+        name="Map"
+        component={MapScreen}
+        options={{
+          title: "Мапа",
+          headerTitleAlign: "center",
+          headerTintColor: "#212121",
+          headerTitleStyle: {
+            fontFamily: "Roboto-Medium",
+            fontSize: 17,
+            lineHeight: 22,
+          },
+          headerStyle: {
+            borderBottomWidth: 1,
+            borderBottomColor: "#E5E5E5",
+          },
+        }}
+      />
+    </Navigator>
+  );
 };

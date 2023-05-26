@@ -28,7 +28,11 @@ export const Home = () => {
           borderTopColor: "#E5E5E5",
           borderTopWidth: 1,
         },
-        tabBarItemStyle: { height: 40 },
+        tabBarItemStyle: { height: 40, borderRadius: 20 },
+        tabBarActiveTintColor: "#FFFFFF",
+        tabBarInactiveTintColor: "#212121",
+        tabBarActiveBackgroundColor: "#FF6C00",
+        tabBarInactiveBackgroundColor: "#FFFFFF",
       }}
     >
       <Screen
@@ -37,8 +41,8 @@ export const Home = () => {
         options={{
           headerShown: false,
           title: "Публікації",
-          tabBarIcon: () => (
-            <Ionicons name="ios-grid-outline" size={24} color="#212121" />
+          tabBarIcon: ({ focused, size, color }) => (
+            <Ionicons name="ios-grid-outline" size={24} color={color} />
           ),
           tabBarIconStyle: { opacity: 0.8 },
         }}
@@ -48,13 +52,11 @@ export const Home = () => {
         component={CreatePostScreen}
         options={() => ({
           title: "Створити публікацію",
-          tabBarIcon: () => <Entypo name="plus" size={18} color="#ffffff" />,
+          tabBarIcon: ({ focused, size, color }) => (
+            <Entypo name="plus" size={18} color={color} />
+          ),
           tabBarStyle: { display: "none" },
-          tabBarItemStyle: {
-            height: 40,
-            borderRadius: 20,
-            backgroundColor: "#FF6C00",
-          },
+
           headerTitleAlign: "center",
           headerTintColor: "#212121",
           headerTitleStyle: {
@@ -81,7 +83,9 @@ export const Home = () => {
         name="ProfileScreen"
         component={ProfileScreen}
         options={{
-          tabBarIcon: () => <Feather name="user" size={24} color="#212121" />,
+          tabBarIcon: ({ focused, size, color }) => (
+            <Feather name="user" size={24} color={color} />
+          ),
           headerShown: false,
           tabBarIconStyle: { opacity: 0.8 },
         }}

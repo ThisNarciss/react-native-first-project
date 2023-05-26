@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SharedLayout } from "../SharedLayout";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../redux/auth/operations";
 import { useNavigation } from "@react-navigation/native";
 import { selectErrorAuth } from "../../redux/auth/selectors";
