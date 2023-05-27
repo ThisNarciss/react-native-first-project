@@ -1,12 +1,12 @@
 import { NavigationContainer } from "@react-navigation/native";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { refreshUser } from "../redux/auth/operations";
-import { selectIsLoggedIn } from "../redux/auth/selectors";
 import { useRoute } from "../router";
+import { useAuth } from "../hooks/useAuth";
 
 export const Main = () => {
-  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const { isLoggedIn } = useAuth();
   const dispatch = useDispatch();
 
   useEffect(() => {

@@ -4,16 +4,15 @@ import { Image, FlatList } from "react-native";
 import { useEffect, useState } from "react";
 import { PostsItem } from "../mainScreen/PostsItem";
 import { StyleSheet } from "react-native";
-import { useSelector } from "react-redux";
-import { selectAvatar, selectUser } from "../../redux/auth/selectors";
+
 import { db } from "../../config";
 import { collection, onSnapshot } from "firebase/firestore";
+import { useAuth } from "../../hooks/useAuth";
 
 const Separator = () => <View style={styles.separator} />;
 
 export const DefaultScreenPosts = () => {
-  const user = useSelector(selectUser);
-  const avatar = useSelector(selectAvatar);
+  const { avatar, user } = useAuth();
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {

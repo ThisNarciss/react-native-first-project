@@ -9,15 +9,17 @@ import {
   Platform,
   Text,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { SharedLayout } from "../SharedLayout";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { loginUser } from "../../redux/auth/operations";
 import { useNavigation } from "@react-navigation/native";
-import { selectErrorAuth } from "../../redux/auth/selectors";
+
+import { useAuth } from "../../hooks/useAuth";
 
 export const LoginScreen = () => {
-  const error = useSelector(selectErrorAuth);
+  const { error, isLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordShow, setIsPasswordShow] = useState(true);
@@ -54,13 +56,14 @@ export const LoginScreen = () => {
     setIsKeyboardShow(true);
     setFocusedInput(id);
   };
-  const handleBlur = () => setFocusedInput(null);
-  const emailHandler = (text) => setEmail(text);
-  const passwordHandler = (text) => setPassword(text);
   const keyboardHide = () => {
     setIsKeyboardShow(false);
     Keyboard.dismiss();
   };
+  const handleBlur = () => setFocusedInput(null);
+  const emailHandler = (text) => setEmail(text);
+  const passwordHandler = (text) => setPassword(text);
+
   const showPasswordText = () => {
     if (!isPasswordShow) {
       setIsPasswordShow(true);
@@ -141,7 +144,11 @@ export const LoginScreen = () => {
               }}
               onPress={onLogin}
             >
-              <Text style={styles.buttonText}>Увійти</Text>
+              {isLoading ? (
+                <ActivityIndicator size="small" />
+              ) : (
+                <Text style={styles.buttonText}>Увійти</Text>
+              )}
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -156,6 +163,7 @@ export const LoginScreen = () => {
               </Text>
             </TouchableOpacity>
           </KeyboardAvoidingView>
+          {}
         </View>
       </SharedLayout>
     </TouchableWithoutFeedback>
@@ -168,7 +176,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     paddingTop: 32,
-    // paddingBottom: 144,
   },
   text: {
     fontFamily: "Roboto-Medium",

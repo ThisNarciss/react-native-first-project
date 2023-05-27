@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-// import { persistReducer } from "redux-persist";
 import {
   loginUser,
   logoutUser,
@@ -7,7 +6,6 @@ import {
   registerUser,
   updateUserPhoto,
 } from "./operations";
-// import storage from "redux-persist/lib/storage";
 
 const initialState = {
   user: { name: null, email: null },
@@ -15,7 +13,7 @@ const initialState = {
   avatar: null,
   token: null,
   isLoggedIn: false,
-  isRefreshing: false,
+  isLoading: false,
   errorAuth: null,
 };
 
@@ -24,8 +22,12 @@ const authSlice = createSlice({
   initialState,
   extraReducers: (builder) => {
     builder
+      .addCase(registerUser.pending, (state) => {
+        state.isLoading = true;
+      })
       .addCase(registerUser.fulfilled, (state, { payload }) => {
         state.isLoggedIn = true;
+        state.isLoading = false;
         state.token = payload.token;
         state.user = payload.user;
         state.userId = payload.userId;
@@ -36,8 +38,12 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.errorAuth = payload;
       })
+      .addCase(loginUser.pending, (state) => {
+        state.isLoading = true;
+      })
       .addCase(loginUser.fulfilled, (state, { payload }) => {
         state.isLoggedIn = true;
+        state.isLoading = false;
         state.token = payload.token;
         state.user = payload.user;
         state.userId = payload.userId;
@@ -56,18 +62,11 @@ const authSlice = createSlice({
         state.avatar = null;
         state.errorAuth = null;
       })
-      .addCase(refreshUser.pending, (state) => {
-        state.isRefreshing = true;
-      })
       .addCase(refreshUser.fulfilled, (state, { payload }) => {
         state.user = payload.user;
         state.userId = payload.userId;
         state.avatar = payload.avatar;
         state.isLoggedIn = true;
-        state.isRefreshing = false;
-      })
-      .addCase(refreshUser.rejected, (state) => {
-        state.isRefreshing = false;
       })
       .addCase(updateUserPhoto.fulfilled, (state, { payload }) => {
         state.avatar = payload.avatar;
@@ -75,15 +74,4 @@ const authSlice = createSlice({
   },
 });
 
-// const persistConfig = {
-//   key: "auth",
-//   storage,
-//   whitelist: ["token"],
-// };
-
 export const authReducer = authSlice.reducer;
-
-// export const persistedReducer = persistReducer(
-//   persistConfig,
-//   authSlice.reducer
-// );

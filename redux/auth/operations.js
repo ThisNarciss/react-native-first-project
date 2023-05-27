@@ -65,7 +65,6 @@ export const refreshUser = createAsyncThunk(
     try {
       return new Promise((resolve, reject) => {
         onAuthStateChanged(auth, (user) => {
-          // console.log(user);
           if (user) {
             const userUpdateProfile = {
               user: { name: user.displayName, email: user.email },

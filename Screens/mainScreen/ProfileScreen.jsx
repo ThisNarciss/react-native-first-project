@@ -10,13 +10,9 @@ import {
 
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { logoutUser, updateUserPhoto } from "../../redux/auth/operations";
-import {
-  selectAvatar,
-  selectUser,
-  selectUserId,
-} from "../../redux/auth/selectors";
+
 import { PostsItem } from "./PostsItem";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db, storage } from "../../config";
@@ -25,13 +21,16 @@ import {
   requestMediaLibraryPermissionsAsync,
 } from "expo-image-picker";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { useAuth } from "../../hooks/useAuth";
 
 const Separator = () => <View style={styles.separator} />;
 
 export const ProfileScreen = () => {
-  const { name } = useSelector(selectUser);
-  const userId = useSelector(selectUserId);
-  const avatar = useSelector(selectAvatar);
+  const {
+    userId,
+    avatar,
+    user: { name },
+  } = useAuth();
   const [posts, setPosts] = useState([]);
   const [width, setWidth] = useState(0);
   const [newAvatar, setNewAvatar] = useState(null);
@@ -89,9 +88,7 @@ export const ProfileScreen = () => {
     }
   };
 
-  const onLogout = () => {
-    dispatch(logoutUser());
-  };
+  const onLogout = () => dispatch(logoutUser());
 
   const onLayout = (event) => {
     const { width } = event.nativeEvent.layout;

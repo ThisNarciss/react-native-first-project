@@ -18,48 +18,17 @@ import { addDoc, collection, doc, onSnapshot } from "firebase/firestore";
 import { AntDesign } from "@expo/vector-icons";
 import { useEffect } from "react";
 import { db } from "../../config";
-import { useSelector } from "react-redux";
-import { selectAvatar, selectUser } from "../../redux/auth/selectors";
-
-const month = [
-  "січня",
-  "лютого",
-  "березня",
-  "квітня",
-  "травня",
-  "червня",
-  "липня",
-  "серпня",
-  "вересня",
-  "жовтня",
-  "листопада",
-  "грудня",
-];
-const options = {
-  timeZone: "Europe/Kiev",
-  hour12: false,
-  hour: "numeric",
-  minute: "numeric",
-};
-
-const Item = ({ comment, avatar, commentDate }) => (
-  <View style={styles.commentBox}>
-    <View style={styles.item}>
-      <Text style={styles.comment}>{comment}</Text>
-      <Text style={styles.date}>{commentDate}</Text>
-    </View>
-    <Image style={styles.userPhoto} source={{ uri: avatar }} />
-  </View>
-);
+import { createCommentDate } from "../../utils/createCommentDate";
+import { CommentsItem } from "./CommentsItem";
+import { useAuth } from "../../hooks/useAuth";
+import { getSortedCommentList } from "../../utils/getSortedCommentsList";
 
 const Separator = () => <View style={styles.separator} />;
 
 export const CommentsScreen = () => {
-  const user = useSelector(selectUser);
-  const avatar = useSelector(selectAvatar);
+  const { avatar, user } = useAuth();
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
-
   const {
     params: { photo, postId },
   } = useRoute();
@@ -80,24 +49,8 @@ export const CommentsScreen = () => {
     };
   }, []);
 
-  const sortedComments = comments.sort((a, b) => {
-    return new Date(a.createdAt) - new Date(b.createdAt);
-  });
-
-  const handleInput = (text) => setComment(text);
-  const keyboardHide = () => {
-    Keyboard.dismiss();
-  };
-
   const createComment = async () => {
-    const date = new Date();
-    const newDate = Date.now();
-    const formatter = new Intl.DateTimeFormat("default", options);
-    const timeString = formatter.format(date);
-    const commentDate = `${date.getDate().toString().padStart(2, "0")} ${
-      month[date.getMonth()]
-    }, ${date.getFullYear()} | ${timeString}`;
-
+    const { commentDate, newDate } = createCommentDate();
     const mainDocRef = doc(db, `posts`, postId);
     const subCollectionRef = collection(mainDocRef, "comments");
     await addDoc(subCollectionRef, {
@@ -108,11 +61,14 @@ export const CommentsScreen = () => {
       createdAt: newDate,
     });
   };
+  const handleInput = (text) => setComment(text);
 
   const onSendBtn = () => {
     createComment();
     setComment("");
   };
+
+  const keyboardHide = () => Keyboard.dismiss();
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -121,9 +77,9 @@ export const CommentsScreen = () => {
           <Image style={styles.image} source={{ uri: photo }} />
           {Boolean(comments.length) && (
             <FlatList
-              data={sortedComments}
+              data={getSortedCommentList(comments)}
               renderItem={({ item }) => (
-                <Item
+                <CommentsItem
                   comment={item.comment}
                   avatar={item.avatar}
                   commentDate={item.commentDate}
@@ -185,13 +141,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 32,
   },
-  userPhoto: {
-    width: 28,
-    height: 28,
-    borderRadius: 16,
-    backgroundColor: "#BDBDBD",
-  },
-  commentBox: { flexDirection: "row", gap: 16, justifyContent: "center" },
+
   input: {
     fontFamily: "Inter-Medium",
     fontSize: 16,
@@ -208,25 +158,6 @@ const styles = StyleSheet.create({
     top: 8,
     borderRadius: 50,
     padding: 10,
-  },
-  item: {
-    flex: 1,
-    padding: 16,
-    borderTopLeftRadius: 6,
-    borderBottomLeftRadius: 6,
-    borderBottomRightRadius: 6,
-    backgroundColor: "rgba(0, 0, 0, 0.03)",
-  },
-  comment: {
-    fontFamily: "Roboto-Regular",
-    fontSize: 13,
-    color: "#212121",
-    marginBottom: 8,
-  },
-  date: {
-    fontFamily: "Roboto-Regular",
-    fontSize: 10,
-    color: "#BDBDBD",
   },
 
   separator: {

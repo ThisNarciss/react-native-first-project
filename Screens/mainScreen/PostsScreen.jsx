@@ -11,9 +11,8 @@ const { Navigator, Screen } = NestedScreen;
 export const PostsScreen = () => {
   const dispatch = useDispatch();
 
-  const onLogout = () => {
-    dispatch(logoutUser());
-  };
+  const onLogout = () => dispatch(logoutUser());
+
   return (
     <Navigator>
       <Screen

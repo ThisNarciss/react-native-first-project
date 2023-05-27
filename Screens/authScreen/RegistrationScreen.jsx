@@ -9,31 +9,26 @@ import {
   Platform,
   TouchableOpacity,
   Text,
+  ActivityIndicator,
 } from "react-native";
 import { SharedLayout } from "../SharedLayout";
 import { Image } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { registerUser } from "../../redux/auth/operations";
 import { useNavigation } from "@react-navigation/native";
-import {
-  selectErrorAuth,
-  selectUser,
-  selectUserId,
-} from "../../redux/auth/selectors";
+
 import {
   requestMediaLibraryPermissionsAsync,
   launchImageLibraryAsync,
 } from "expo-image-picker";
 
-import PushNotification from "react-native-push-notification";
 import { storage } from "../../config";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { useAuth } from "../../hooks/useAuth";
 
 export const RegistrationScreen = () => {
-  const error = useSelector(selectErrorAuth);
-  const userId = useSelector(selectUserId);
-  const user = useSelector(selectUser);
+  const { error, isLoading, userId, user } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -244,7 +239,11 @@ export const RegistrationScreen = () => {
               }}
               onPress={onRegistration}
             >
-              <Text style={styles.buttonText}>Зареєструватися</Text>
+              {isLoading ? (
+                <ActivityIndicator size="small" />
+              ) : (
+                <Text style={styles.buttonText}>Зареєструватися</Text>
+              )}
             </TouchableOpacity>
 
             <TouchableOpacity

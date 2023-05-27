@@ -1,7 +1,7 @@
 # Register Screen
 
 ```
-https://monosnap.com/file/hgLghOKg9DVTULExCVOPZ9pJhlUtI0
+https://monosnap.com/file/OfSeHMGPol9D5avcoWVJiPhZeSz72e
 
 ```
 
@@ -14,11 +14,7 @@ https://monosnap.com/file/gDt4SYkGrxbYxKxoftGEfrD9IhakAm
 # Posts Screen
 
 ```
-https://monosnap.com/file/jwOW8DA8tQbOcxyKTDXAfq4ps7m7Dh
-```
-
-```
-https://monosnap.com/file/xw99W2clMDK86MNCsDVT5U5jIJmAyE
+https://monosnap.com/file/5LJmmCdYGMSK1aWcKdUHBoAKyBKc7j
 ```
 
 # CreatePosts Screen
@@ -34,25 +30,19 @@ https://monosnap.com/file/qhimuqTj8OCvlHBzvEFc8TY3Bqjq7o
 # Comments Screen
 
 ```
-https://monosnap.com/file/dWUeBwLbsg7DwYW0ZTf0Luk61hTyi6
-```
-
-```
-https://monosnap.com/file/bAGXFNi1lJ9x6y5QKvBLFQbhCdIW1Q
-```
-
-```
-https://monosnap.com/file/yax94FOPdZj9i6rv6floQwLJnckH2F
+https://monosnap.com/file/u4O5IsYLbdtePxOGx7dhpaJc0O3Xid
+https://monosnap.com/file/g5XreubwohDvfKh1e2jxRFlWBhjTlT
 ```
 
 # Map Screen
 
 ```
-https://monosnap.com/file/SJ1ZZF4nnYLvFLmohy2l6xx1zNbSNF
+https://monosnap.com/file/W7RDccNjzn3bAscFPEvXjfZaec48RX
 ```
 
 # Profile Screen
 
 ```
-https://monosnap.com/file/OFCI2Wb7dWRVT1MccqQWH8BJmvcduk
+https://monosnap.com/file/eK3Lnj9Gl7O2tZkIqeRawqWKDtMNzI
+https://monosnap.com/file/csoUCjBuohQdUkNtBy1LaXHkvRDuJ3
 ```

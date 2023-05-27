@@ -20,21 +20,31 @@ import { Ionicons, AntDesign } from "@expo/vector-icons";
 import { db, storage } from "../../config";
 import { addDoc, collection } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { useSelector } from "react-redux";
-import { selectUser, selectUserId } from "../../redux/auth/selectors";
+
+import { useAuth } from "../../hooks/useAuth";
+import {
+  launchImageLibraryAsync,
+  requestMediaLibraryPermissionsAsync,
+} from "expo-image-picker";
 
 export const CreatePostScreen = () => {
-  const user = useSelector(selectUser);
-  const userId = useSelector(selectUserId);
+  const { user, userId } = useAuth();
   const [comment, setComment] = useState("");
   const [place, setPlace] = useState("");
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [photo, setPhoto] = useState(null);
+  const [image, setImage] = useState(null);
   const [location, setLocation] = useState(null);
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    if (image) {
+      setPhoto(null);
+    }
+  }, [image]);
 
   const cameraRefCallback = useCallback((ref) => {
     setCameraRef(ref);
@@ -91,8 +101,23 @@ export const CreatePostScreen = () => {
     } catch (e) {}
   };
 
+  const pickImageFromGallery = async () => {
+    const { status } = await requestMediaLibraryPermissionsAsync();
+
+    if (status !== "granted") {
+      console.log("Permission to access media library was denied.");
+      return;
+    }
+
+    const result = await launchImageLibraryAsync();
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
   const uploadPhotoToStorage = async () => {
-    const response = await fetch(photo);
+    const response = await fetch(photo || image);
     const file = await response.blob();
     const postId = Date.now().toString();
     const storageRef = ref(storage, `images/${postId}`);
@@ -116,6 +141,7 @@ export const CreatePostScreen = () => {
     setComment("");
     setPlace("");
     setPhoto(null);
+    setImage(null);
   };
 
   const keyboardHide = () => {
@@ -145,9 +171,9 @@ export const CreatePostScreen = () => {
         <View style={styles.container}>
           <View style={styles.cameraBox}>
             <Camera style={styles.camera} type={type} ref={cameraRefCallback}>
-              {photo && (
+              {(photo || image) && (
                 <View style={styles.photoBox}>
-                  <Image style={{ flex: 1 }} source={{ uri: photo }} />
+                  <Image style={{ flex: 1 }} source={{ uri: photo || image }} />
                 </View>
               )}
               <TouchableOpacity
@@ -183,7 +209,10 @@ export const CreatePostScreen = () => {
               </TouchableOpacity>
             </Camera>
           </View>
-          <TouchableOpacity style={styles.addPhoto}>
+          <TouchableOpacity
+            style={styles.addPhoto}
+            onPress={pickImageFromGallery}
+          >
             <Text style={styles.addPhotoText}>Загрузити фото</Text>
           </TouchableOpacity>
           <KeyboardAvoidingView
@@ -216,10 +245,11 @@ export const CreatePostScreen = () => {
               />
             </View>
             <TouchableOpacity
+              disabled={!(comment && place && (photo || image))}
               style={{
                 ...styles.buttonBox,
                 backgroundColor: `${
-                  comment && place && photo ? "#FF6C00" : "#F6F6F6"
+                  comment && place && (photo || image) ? "#FF6C00" : "#F6F6F6"
                 }`,
               }}
               onPress={handleBtnPublic}
@@ -227,7 +257,9 @@ export const CreatePostScreen = () => {
               <Text
                 style={{
                   ...styles.buttonText,
-                  color: `${comment && place && photo ? "#ffffff" : "#BDBDBD"}`,
+                  color: `${
+                    comment && place && (photo || image) ? "#ffffff" : "#BDBDBD"
+                  }`,
                 }}
               >
                 Опублікувати
