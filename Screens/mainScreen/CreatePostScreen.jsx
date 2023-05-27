@@ -192,14 +192,6 @@ export const CreatePostScreen = () => {
           <View style={styles.cameraBox}>
             {isCameraOn && !image && (
               <Camera style={styles.camera} type={type} ref={cameraRefCallback}>
-                {/* {(photo || image) && (
-                  <View style={styles.photoBox}>
-                    <Image
-                      style={{ flex: 1 }}
-                      source={{ uri: photo || image }}
-                    />
-                  </View>
-                )} */}
                 <TouchableOpacity
                   style={styles.cameraReverse}
                   onPress={() => {
