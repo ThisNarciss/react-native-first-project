@@ -36,6 +36,7 @@ export const CreatePostScreen = () => {
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [photo, setPhoto] = useState(null);
   const [image, setImage] = useState(null);
+  const [isCameraOn, setIsCameraOn] = useState(true);
   const [location, setLocation] = useState(null);
 
   const navigation = useNavigation();
@@ -52,12 +53,15 @@ export const CreatePostScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      const cleanup = () => {
+      if (!isCameraOn && !image && !photo) {
+        setIsCameraOn(true);
+      }
+
+      return () => {
         if (cameraRef) {
-          cameraRef.stopRecording();
+          setIsCameraOn(false);
         }
       };
-      return cleanup;
     }, [cameraRef])
   );
 
@@ -102,6 +106,12 @@ export const CreatePostScreen = () => {
   };
 
   const pickImageFromGallery = async () => {
+    if (image) {
+      setImage(null);
+      setPhoto(null);
+      setIsCameraOn(true);
+      return;
+    }
     const { status } = await requestMediaLibraryPermissionsAsync();
 
     if (status !== "granted") {
@@ -113,6 +123,7 @@ export const CreatePostScreen = () => {
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      setPhoto(null);
     }
   };
 
@@ -135,6 +146,8 @@ export const CreatePostScreen = () => {
     setComment("");
     setPlace("");
     setPhoto(null);
+    setImage(null);
+    setIsCameraOn(true);
   };
 
   const handleDelBtn = () => {
@@ -142,6 +155,7 @@ export const CreatePostScreen = () => {
     setPlace("");
     setPhoto(null);
     setImage(null);
+    setIsCameraOn(true);
   };
 
   const keyboardHide = () => {
@@ -151,10 +165,16 @@ export const CreatePostScreen = () => {
   const placeHandler = (text) => setPlace(text);
 
   const takePhoto = async () => {
+    if (!isCameraOn) {
+      setPhoto(null);
+      setIsCameraOn(true);
+      return;
+    }
     if (cameraRef) {
       const { uri } = await cameraRef.takePictureAsync();
       await MediaLibrary.createAssetAsync(uri);
       setPhoto(uri);
+      setIsCameraOn(false);
     }
   };
 
@@ -170,50 +190,62 @@ export const CreatePostScreen = () => {
       <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
         <View style={styles.container}>
           <View style={styles.cameraBox}>
-            <Camera style={styles.camera} type={type} ref={cameraRefCallback}>
-              {(photo || image) && (
-                <View style={styles.photoBox}>
-                  <Image style={{ flex: 1 }} source={{ uri: photo || image }} />
-                </View>
-              )}
-              <TouchableOpacity
-                style={styles.cameraReverse}
-                onPress={() => {
-                  setType(
-                    type === Camera.Constants.Type.back
-                      ? Camera.Constants.Type.front
-                      : Camera.Constants.Type.back
-                  );
-                }}
-              >
-                <Ionicons
-                  name="camera-reverse-outline"
-                  size={24}
-                  color="white"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={takePhoto}
-                style={{
-                  ...styles.cameraBtn,
-                  backgroundColor: `${
-                    photo ? "rgba(255, 255, 255, 0.3)" : "#FFFFFF"
-                  }`,
-                }}
-              >
-                <FontAwesome
-                  name="camera-retro"
-                  size={24}
-                  color={`${photo ? "#FFFFFF" : "#BDBDBD"}`}
-                />
-              </TouchableOpacity>
-            </Camera>
+            {isCameraOn && !image && (
+              <Camera style={styles.camera} type={type} ref={cameraRefCallback}>
+                {/* {(photo || image) && (
+                  <View style={styles.photoBox}>
+                    <Image
+                      style={{ flex: 1 }}
+                      source={{ uri: photo || image }}
+                    />
+                  </View>
+                )} */}
+                <TouchableOpacity
+                  style={styles.cameraReverse}
+                  onPress={() => {
+                    setType(
+                      type === Camera.Constants.Type.back
+                        ? Camera.Constants.Type.front
+                        : Camera.Constants.Type.back
+                    );
+                  }}
+                >
+                  <Ionicons
+                    name="camera-reverse-outline"
+                    size={24}
+                    color="white"
+                  />
+                </TouchableOpacity>
+              </Camera>
+            )}
+            {(photo || image) && (
+              <View style={styles.camera}>
+                <Image style={styles.image} source={{ uri: photo || image }} />
+              </View>
+            )}
+            <TouchableOpacity
+              onPress={takePhoto}
+              style={{
+                ...styles.cameraBtn,
+                backgroundColor: `${
+                  photo || image ? "rgba(255, 255, 255, 0.3)" : "#FFFFFF"
+                }`,
+              }}
+            >
+              <FontAwesome
+                name="camera-retro"
+                size={24}
+                color={`${photo || image ? "#FFFFFF" : "#BDBDBD"}`}
+              />
+            </TouchableOpacity>
           </View>
           <TouchableOpacity
             style={styles.addPhoto}
             onPress={pickImageFromGallery}
           >
-            <Text style={styles.addPhotoText}>Загрузити фото</Text>
+            <Text style={styles.addPhotoText}>
+              {image ? "Видалити фото" : "Загрузити фото"}
+            </Text>
           </TouchableOpacity>
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -294,11 +326,16 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   photoBox: {
-    position: "absolute",
+    // position: "absolute",
     width: "100%",
     height: "100%",
-    // flex: 1,
+    flex: 1,
     zIndex: 2,
+  },
+  image: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
   },
   camera: {
     position: "relative",
@@ -314,7 +351,7 @@ const styles = StyleSheet.create({
     flex: 0.2,
   },
   cameraBtn: {
-    position: "relative",
+    position: "absolute",
     borderRadius: 30,
     padding: 18,
 
