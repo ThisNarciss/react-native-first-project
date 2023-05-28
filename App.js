@@ -1,3 +1,4 @@
+import "expo-dev-client";
 import "react-native-gesture-handler";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
