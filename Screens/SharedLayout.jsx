@@ -16,7 +16,7 @@ export function SharedLayout({ children }) {
       <View style={styles.container}>
         <ImageBackground
           style={styles.image}
-          source={require("../assets/img/photo-bg.jpg")}
+          source={require("../assets/photo-bg.jpg")}
         >
           {children}
         </ImageBackground>

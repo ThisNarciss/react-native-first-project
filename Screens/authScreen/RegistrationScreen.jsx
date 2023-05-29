@@ -153,7 +153,11 @@ export const RegistrationScreen = () => {
               transform: [{ translateX: -0.5 * width }],
             }}
           >
-            <Image style={styles.image} source={{ uri: avatar }} />
+            {avatar ? (
+              <Image style={styles.image} source={{ uri: avatar }} />
+            ) : (
+              <View style={styles.image}></View>
+            )}
             <TouchableOpacity
               onPress={pickImageFromGallery}
               style={{

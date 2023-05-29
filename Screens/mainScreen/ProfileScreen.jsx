@@ -99,7 +99,7 @@ export const ProfileScreen = () => {
     <View style={styles.bg}>
       <ImageBackground
         style={styles.imageBg}
-        source={require("../../assets/img/photo-bg.jpg")}
+        source={require("../../assets/photo-bg.jpg")}
       >
         <View style={styles.container}>
           <View style={styles.board}>
@@ -110,7 +110,11 @@ export const ProfileScreen = () => {
                 transform: [{ translateX: -0.5 * width }],
               }}
             >
-              <Image style={styles.image} source={{ uri: avatar }} />
+              {avatar ? (
+                <Image style={styles.image} source={{ uri: avatar }} />
+              ) : (
+                <View style={styles.image}></View>
+              )}
               <TouchableOpacity
                 style={{
                   ...styles.icon,
