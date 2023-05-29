@@ -99,7 +99,7 @@ export const ProfileScreen = () => {
     <View style={styles.bg}>
       <ImageBackground
         style={styles.imageBg}
-        source={require("../../assets/photo-bg.jpg")}
+        source={require("../../assets/img/photo-bg.jpg")}
       >
         <View style={styles.container}>
           <View style={styles.board}>
