@@ -4,6 +4,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
+    "site": "project-react-native-b54c5",
     "public": "public",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
   },
@@ -12,9 +13,5 @@
   },
   "remoteconfig": {
     "template": "remoteconfig.template.json"
-  },
-  "hosting": {
-    "site": "project-react-native-b54c5",
-    "public": "public"
   }
 }
