@@ -113,7 +113,7 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.reactnativefirstproject"
+    namespace 'com.thisnarciss.reactnativefirstproject'
     defaultConfig {
         applicationId 'com.thisnarciss.reactnativefirstproject'
         minSdkVersion rootProject.ext.minSdkVersion
