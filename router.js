@@ -1,9 +1,9 @@
-import { Home } from "./Screens/mainScreen/Home";
-import { RegistrationScreen } from "./Screens/authScreen/RegistrationScreen";
-import { LoginScreen } from "./Screens/authScreen/LoginScreen";
+import { Home } from "./src/screens/mainScreen/Home";
+import { RegistrationScreen } from "./src/screens/authScreen/RegistrationScreen";
+import { LoginScreen } from "./src/screens/authScreen/LoginScreen";
 import { createStackNavigator } from "@react-navigation/stack";
-import { MapScreen } from "./Screens/nestedScreen/MapScreen";
-import { CommentsScreen } from "./Screens/nestedScreen/CommentsScreen";
+import { MapScreen } from "./src/screens/nestedScreen/MapScreen";
+import { CommentsScreen } from "./src/screens/nestedScreen/CommentsScreen";
 const Stack = createStackNavigator();
 const { Navigator, Screen } = Stack;
 
